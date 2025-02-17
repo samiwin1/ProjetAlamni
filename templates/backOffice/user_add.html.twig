@@ -1,0 +1,114 @@
+{% extends 'base_back.html.twig' %}
+
+{% block welc %}
+    <div class="page-header">
+        <div class="card">
+            <div class="card-header">
+                <h5>Ajouter un Utilisateur</h5>
+            </div>
+            <div class="card-block" style="margin-left: 360px; margin-top: 50px;">
+                {{ form_start(form, {'attr': {'class': 'form-material', 'enctype': 'multipart/form-data'}}) }}
+                    
+                    {# Nom #}
+                    <div class="form-group form-default">
+                        {{ form_label(form.nom, 'Nom') }}
+                        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+
+                    {# Prénom #}
+                    <div class="form-group form-default">
+                        {{ form_label(form.prenom, 'Prénom') }}
+                        {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.prenom) }}
+                    </div>
+
+                    {# Email #}
+                    <div class="form-group form-default">
+                        {{ form_label(form.email, 'Email') }}
+                        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+
+                    {# Mot de passe #}
+                    <div class="form-group form-default">
+                        {{ form_label(form.mot_de_passe, 'Mot de passe') }}
+                        {{ form_widget(form.mot_de_passe, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.mot_de_passe) }}
+                    </div>
+
+                    {# Rôle #}
+                    {% if form.role is defined %}
+                        <div class="form-group form-default">
+                            {{ form_label(form.role, 'Rôle') }}
+                            {{ form_widget(form.role, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.role) }}
+                        </div>
+                    {% endif %}
+
+                    {# Niveau d'études #}
+                    <div class="form-group form-default">
+                        {{ form_label(form.niveau, 'Niveau d\'études') }}
+                        {{ form_widget(form.niveau, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.niveau) }}
+                    </div>
+
+                    {# Nom du niveau #}
+                    <div class="form-group form-default">
+                        {{ form_label(form.nom_niveau, 'Nom du niveau') }}
+                        {{ form_widget(form.nom_niveau, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.nom_niveau) }}
+                    </div>
+
+                    {# Photo #}
+                    <div class="form-group form-default">
+                        {{ form_label(form.photo, 'Photo de profil') }}
+                        {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.photo) }}
+                        <small class="form-text text-muted">
+                            Formats acceptés : JPEG, PNG, GIF. Taille maximale : 2Mo
+                        </small>
+                    </div>
+
+                    <div class="form-group form-default">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer
+                        </button>
+                        <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                    </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            // Gestion de l'affichage conditionnel des champs niveau
+            function toggleNiveauFields() {
+                var role = $('#user_role').val();
+                var niveauFields = $('#user_niveau').closest('.form-group');
+                var nomNiveauFields = $('#user_nom_niveau').closest('.form-group');
+
+                if (role === 'ROLE_ELEVE') {
+                    niveauFields.show();
+                    nomNiveauFields.show();
+                } else {
+                    niveauFields.hide();
+                    nomNiveauFields.hide();
+                }
+            }
+
+            // Appliquer au chargement
+            toggleNiveauFields();
+
+            // Appliquer au changement de rôle
+            $('#user_role').change(toggleNiveauFields);
+        });
+    </script>
+{% endblock %}

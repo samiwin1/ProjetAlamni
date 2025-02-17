@@ -1,0 +1,115 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Éditer la Réclamation{% endblock %}
+
+{# Disable unnecessary sections from the base template #}
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block team %}{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Modifier la Réclamation</h1>
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+      <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+
+    <div class="card p-4 shadow">
+    {{ form_start(form) }}
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th>Email Utilisateur</th>
+                <td>{{ form_widget(form.user_email, {'attr': {'class': 'form-control'}}) }}</td>
+            </tr>
+            <tr>
+                <th>Email de l'Admin</th>
+                <td>{{ form_widget(form.admin_mail, {'attr': {'class': 'form-control'}}) }}</td>
+            </tr>
+            <tr>
+                <th>Rôle</th>
+                <td>{{ form_widget(form.role, {'attr': {'class': 'form-select'}}) }}</td>
+            </tr>
+            <tr>
+                <th>Objet</th>
+                <td>{{ form_widget(form.objet, {'attr': {'class': 'form-control'}}) }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Boutons d'action à l'intérieur du formulaire -->
+    <div class="text-center mt-4">
+        <button type="submit" class="btn btn-success mx-2">
+            <i class="fas fa-save"></i> Mettre à Jour
+        </button>
+    </div>
+    {{ form_end(form) }}
+
+    <!-- Boutons d'action en dehors du formulaire -->
+    <div class="text-center mt-4">
+        <a href="{{ path('app_reclamation_front_show', {'id': reclamation.id}) }}" class="btn btn-secondary mx-2">
+            <i class="fas fa-arrow-left"></i> Retour
+        </a>
+
+        <form method="post" action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" 
+            style="display:inline;" 
+            onsubmit="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+            <button type="submit" class="btn btn-danger mx-2">
+                <i class="fas fa-trash-alt"></i> Supprimer
+            </button>
+        </form>
+
+    </div>
+</div>
+
+
+{% endblock %}
+{% block js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let alerts = document.querySelectorAll(".alert");
+        alerts.forEach(function (alert) {
+            setTimeout(function () {
+                alert.style.transition = "opacity 0.5s ease-out";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+        });
+    });
+</script>
+{% endblock %}

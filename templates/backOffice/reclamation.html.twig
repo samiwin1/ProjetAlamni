@@ -1,0 +1,116 @@
+{% extends 'base_back.html.twig' %}
+{% block navbar %}{% endblock %}
+
+
+
+{% block head %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Styles généraux du tableau */
+        .table {
+            margin-top: 15px;
+            border-collapse: collapse; /* Fusionne les bordures des cellules */
+            width: 100%;
+        }
+        .table th, .table td {
+            padding: 22px 45px; /* Augmentation du padding pour plus d'espace */
+            text-align: center;
+            border: 8px solid #010; /* Bordure épaisse entre chaque cellule */
+        }
+        .table th {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* Fond de ligne alterné */
+        }
+        .table tbody tr:hover {
+            background-color: #e0e0e0; /* Effet de survol des lignes */
+        }
+        .table td {
+            font-size: 14px;
+        }
+        .badge {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        /* Alignement des colonnes ID et Date */
+        .table td.id-column, .table td.date-column {
+            text-align: left;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}Reclamations{% endblock %}
+
+{% block welc %}
+    <div class="page-header" style="display: inline-block; margin: 5px; padding: 5px; width: 100%;">
+        <h1 class="my-4" style="display: inline-block; white-space: nowrap; width: auto; margin: 5px; padding: 5px 5px; font-size: 26px;">Liste des Réclamations</h1>
+    </div>
+
+    <div style="margin-right: 5px; padding: 5px;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Email</th>
+                    <th>Admin Email</th>
+                    <th>Rôle</th>
+                    <th>Objet</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Date de Soumission</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody >
+                {% for reclamation in reclamations %}
+                    <tr>
+                        <td class="id-column">{{ reclamation.id }}</td>
+                        <td style="padding: 8px">{{ reclamation.userEmail }}</td>
+                        <td style="padding: 8px">{{ reclamation.adminMail }}</td>
+                        <td style="padding: 8px">{{ reclamation.role }}</td>
+                        <td style="padding: 8px">{{ reclamation.objet }}</td>
+                        <td style="padding: 8px">{{ reclamation.description }}</td>
+                        <td style="padding: 8px">
+                            {% if reclamation.status == 'En attente' %}
+                                <span class="badge bg-warning text-dark">En attente</span>
+                            {% elseif reclamation.status == 'En cours' %}
+                                <span class="badge bg-primary">En cours</span>
+                            {% else %}
+                                <span class="badge bg-success">Résolue</span>
+                            {% endif %}
+                        </td>
+                        <td class="date-column">{{ reclamation.dateSoumission|date('d/m/Y H:i') }}</td>
+                        <td >
+                            <a style="padding: 5px; margin: 5px" href="{{ path('app_reclamation_front_show', {'id': reclamation.id}) }}" class="btn btn-info btn-sm me-2">
+                                <i class="fas fa-eye"></i> <!-- View Icon -->
+                            </a>
+                            <a style="padding: 10px; margin: 5px" href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-warning btn-sm me-2" >
+                                <i class="fas fa-edit"></i> <!-- Edit Icon -->
+                            </a>
+                            <form method="post" action="{{ path('app_reclamation_delete_back', {'id': reclamation.id}) }}" style="display:inline; padding: 7px">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">
+                                    <i class="fas fa-trash-alt"></i> <!-- Delete Icon -->
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center" style="padding: 20px; font-size: 16px;">Aucune réclamation trouvée.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            {% if reclamations is not empty %}
+                <tfoot>
+                    <tr>
+                        <td colspan="9" class="text-center" style="padding: 20px; font-size: 16px; color: red;  font-weight: bold;">Total: {{ reclamations|length }} réclamations</td>
+                    </tr>
+                </tfoot>
+            {% endif %}
+        </table>
+    </div>
+{% endblock %}

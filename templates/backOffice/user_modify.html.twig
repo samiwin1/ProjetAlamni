@@ -1,0 +1,59 @@
+{% extends 'base_back.html.twig' %}
+
+{% block welc %}
+<style>
+.niveau-etudes-wrapper , .nom-niveau-wrapper{
+display:none;
+opacity:0;
+visibility:hidden;
+} 
+    </style>
+    <div class="page-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Modifier l'utilisateur</h5>
+                    </div>
+                    <div class="card-block">
+                        {{ form_start(form) }}
+                            <div class="form-group">
+                                {{ form_label(form.nom) }}
+                                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(form.prenom) }}
+                                {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(form.email) }}
+                                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            <div class="form-group">
+                                {{ form_label(form.mot_de_passe) }}
+                                {{ form_widget(form.mot_de_passe, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            
+
+                       
+
+                            <div class="form-group">
+                                {{ form_label(form.photo) }}
+                                {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+                            </div>
+                            {% if userToModify.photo %}
+                                <div class="form-group">
+                                    <img src="data:image/jpeg;base64,{{ userToModify.photo }}" 
+                                         alt="Photo actuelle" 
+                                         class="img-thumbnail" 
+                                         style="max-width: 200px">
+                                </div>
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Planning Index{% endblock %}
+{% block navbar %}{% endblock %}
+
+{% block welc %}
+    <h1>Planning Index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Seance</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Uploaded Date</th>
+                <th>Modified Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        
+        {% for planning in plannings %}
+            <tr>
+                <td>{{ planning.id }}</td>
+                <td>{{ planning.name }}</td>
+                <td>{{ planning.seance ? planning.seance.name : 'No Seance' }}</td>
+                <td>{{ planning.startTime ? planning.startTime|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ planning.endTime ? planning.endTime|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ planning.uploadedDate ? planning.uploadedDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ planning.modifiedDate ? planning.modifiedDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td class="actions">
+                    <a href="{{ path('app_planning_edit', {'id': planning.id}) }}" class="btn btn-warning">Edit</a>
+                    <form action="{{ path('app_planning_delete', {'id': planning.id}) }}" method="post" style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ planning.id) }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8" class="no-records">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_planning_new') }}" class="btn btn-primary">Create New</a>
+    <a href="{{ path('app_seance_new') }}" class="btn btn-success">Add Seance</a>
+
+{% endblock %}
