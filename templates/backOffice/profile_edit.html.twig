@@ -1,0 +1,177 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block css %}
+{{ parent() }}
+<style>
+    .profile-card {
+        max-width: 600px;
+        margin: 30px auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .profile-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .form-control:focus {
+        border-color: #4099ff;
+        box-shadow: 0 0 0 0.2rem rgba(64, 153, 255, 0.25);
+    }
+
+    .btn {
+        padding: 10px 25px;
+        border-radius: 5px;
+        font-weight: 600;
+        margin: 0 5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #4099ff;
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        opacity: 0.9;
+    }
+
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 80%;
+        margin-top: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block welc %}
+<div class="page-body" style="
+    margin-top: 100px;
+">
+    <div class="profile-card">
+        {{ form_start(form) }}
+            <div class="profile-header">
+                <h2>Modifier mon profil</h2>
+                {% if user.photo %}
+                    <img src="data:image/jpeg;base64,{{ user.photo }}" alt="Profile" class="profile-image" id="preview-image">
+                {% else %}
+                    <img src="{{ asset('back/images/avatar-default.jpg') }}" alt="Default Profile" class="profile-image" id="preview-image">
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.photo, 'Photo de profil') }}
+                {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.photo) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.nom, 'Nom') }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nom) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.prenom, 'Prénom') }}
+                {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.prenom) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.email, 'Email') }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.email) }}
+            </div>
+
+
+            <div class="form-group">
+                {{ form_label(form.niveau) }}
+                {{ form_widget(form.niveau) }}
+                {{ form_errors(form.niveau) }}
+            </div>
+
+            <div class="form-group" id="nomNiveauGroup">
+                {{ form_label(form.nom_niveau) }}
+                {{ form_widget(form.nom_niveau) }}
+                {{ form_errors(form.nom_niveau) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.mot_de_passe, 'Nouveau mot de passe (laisser vide pour ne pas changer)') }}
+                {{ form_widget(form.mot_de_passe, {'required': false, 'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.mot_de_passe) }}
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <a href="{{ path('user_profile') }}" class="btn btn-secondary">Annuler</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const previewImage = document.getElementById('preview-image');
+
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+{% endblock %}

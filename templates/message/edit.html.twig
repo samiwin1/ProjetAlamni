@@ -1,0 +1,194 @@
+{% extends 'base_front.html.twig' %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block team %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block title %}Modifier la Message{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-5 page-header position-relative mb-5">
+    <div class="container py-5">
+        <h1 class="display-4 text-white animated slideInDown mb-4">
+            ✏️ Modifier la Messages
+        </h1>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-danger text-white text-center rounded-top">
+                    <h3 class="fw-bold mb-0"><i class="fas fa-edit"></i> Modifier la Messages</h3>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Gestion des erreurs -->
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Formulaire -->
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="to" class="form-label fw-bold">
+                                📩 À :
+                            </label>
+                            <input type="text" id="to" class="form-control" placeholder="Entrez le destinataire" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="subject" class="form-label fw-bold">
+                                📝 Objet :
+                            </label>
+                            <input type="text" id="subject" class="form-control" placeholder="Saisissez l'objet du message" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="message" class="form-label fw-bold">
+                                ✉️ Message :
+                            </label>
+                            <textarea id="message" class="form-control" rows="5" placeholder="Écrivez votre message ici..." required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="attachment" class="form-label fw-bold">
+                                📎 Ajouter une pièce jointe :
+                            </label>
+                            <input type="file" id="attachment" class="form-control">
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_message_index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour à la liste
+                            </a>
+                            <div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Mettre à Jour
+                                </button>
+                                <button type="button" class="btn btn-dark">
+                                    <i class="fas fa-save"></i> Enregistrer en Brouillon
+                                </button>
+                            </div>
+                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">❌ Confirmation de Suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Êtes-vous sûr de vouloir supprimer cette Messages ?</p>
+                <p class="text-danger fw-bold">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                {{ include('message/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border-radius: 16px;
+        transition: all 0.3s ease-in-out;
+        background: #fff;
+    }
+
+    .card-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 15px;
+        background: linear-gradient(45deg, #ff5733, #c70039);
+        color: white;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        font-size: 1rem;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.25);
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-size: 1rem;
+        padding: 10px 15px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #ff5733, #c70039);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-dark {
+        background: #6c757d;
+        color: white;
+        border: none;
+    }
+
+    .btn-dark:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    .modal-content {
+        border-radius: 12px;
+    }
+
+    .modal-header {
+        border-radius: 12px 12px 0 0;
+    }
+</style>
+{% endblock %}
