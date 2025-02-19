@@ -1,0 +1,45 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}new reclamation{% endblock %}
+
+{# Désactiver les sections inutiles du template de base #}
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block team %}{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-center">Envoyer une Réclamation</h1>
+        <div class="card p-4 shadow">
+            {{ form_start(form) }}
+            
+            {# Champs cachés (Email + Rôle) #}
+            {{ form_widget(form.user_email, { 'attr': {'type': 'hidden'} }) }}
+            {{ form_widget(form.role, { 'attr': {'type': 'hidden'} }) }}
+
+            {# Affichage manuel des autres champs #}
+            <div class="form-group">
+                {{ form_label(form.admin_mail) }}
+                {{ form_widget(form.admin_mail, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.objet) }}
+                {{ form_widget(form.objet, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '5'}}) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Soumettre</button>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

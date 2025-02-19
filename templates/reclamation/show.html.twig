@@ -1,0 +1,84 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Détails de la Réclamation{% endblock %}
+
+{# Disable unnecessary sections from the base template #}
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block team %}{% endblock %}
+
+{% block welc %}
+<div class="container mt-5">
+    <h1 class="text-center">Détails de la Réclamation</h1>
+    <div class="card p-4 shadow">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <th>ID</th>
+                    <td>{{ reclamation.id }}</td>
+                </tr>
+                <tr>
+                    <th>Email Utilisateur</th>
+                    <td>{{ reclamation.userEmail }}</td>
+                </tr>
+                <tr>
+                    <th>Objet</th>
+                    <td>{{ reclamation.objet }}</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>{{ reclamation.description }}</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>
+                        {% if reclamation.status == 'En attente' %}
+                            <span class="badge bg-warning text-dark">En attente</span>
+                        {% elseif reclamation.status == 'En cours' %}
+                            <span class="badge bg-primary">En cours</span>
+                        {% else %}
+                            <span class="badge bg-success">Résolue</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Date de Soumission</th>
+                    <td>{{ reclamation.dateSoumission ? reclamation.dateSoumission|date('d-m-Y H:i') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Email Destinataire</th>
+                    <td>{{ reclamation.adminMail }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Action Buttons (Modifier, Supprimer, Retour) -->
+        <div class="text-center mt-4">
+            <!-- Back Button -->
+            <a href="{{ path('app_reclamation_back') }}" class="btn btn-primary mx-2">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+
+            <!-- Edit Button -->
+            {# <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-warning mx-2">
+                <i class="fas fa-edit"></i> Modifier
+            </a> #}
+
+            <form method="post" action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" 
+              style="display:inline;" 
+              onsubmit="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+            <button type="submit" class="btn btn-danger mx-2">
+              <i class="fas fa-trash-alt"></i> Supprimer
+            </button>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

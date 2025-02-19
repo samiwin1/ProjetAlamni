@@ -1,0 +1,193 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}School Agenda - Kider{% endblock %}
+
+{# Disable unnecessary sections but KEEP NAVBAR #}
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+
+{% block content %}
+    <style>
+        /* Calendar Styling */
+        .calendar {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .calendar-header .nav-buttons button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .calendar-header .nav-buttons button:hover {
+            background: #0056b3;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-row {
+            display: contents;
+        }
+
+        .calendar-cell {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-cell .calendar-day {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .calendar-event {
+            background: #e3f2fd;
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .calendar-event strong {
+            display: block;
+            font-weight: bold;
+        }
+
+        .calendar-event p {
+            margin: 0;
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .calendar-cell {
+                min-height: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-cell {
+                min-height: 60px;
+            }
+        }
+    </style>
+    <!-- Page Header Start -->
+    <div class="container-xxl py-5 page-header position-relative mb-5">
+        <div class="container py-5">
+            <h1 class="display-2 text-white animated slideInDown mb-4">School Agenda</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Agenda</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Calendar Start -->
+    <div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+            <h1 class="mb-3">School Agenda</h1>
+            <p>Check the latest planning and schedules for school activities.</p>
+        </div>
+        <div class="calendar wow fadeInUp" data-wow-delay="0.3s">
+            <div class="calendar-header">
+                <h2>February 2025</h2>
+                <div class="nav-buttons">
+                    <button onclick="changeMonth(-1)">Previous</button>
+                    <button onclick="changeMonth(1)">Next</button>
+                </div>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-row">
+                    <div class="calendar-cell">Sun</div>
+                    <div class="calendar-cell">Mon</div>
+                    <div class="calendar-cell">Tue</div>
+                    <div class="calendar-cell">Wed</div>
+                    <div class="calendar-cell">Thu</div>
+                    <div class="calendar-cell">Fri</div>
+                    <div class="calendar-cell">Sat</div>
+                </div>
+                {% set daysInMonth = range(1, 28) %} {# Assuming February has 28 days #}
+                
+                {% for day in daysInMonth %}
+                    {% if loop.index0 % 7 == 0 %}
+                        <div class="calendar-row">
+                    {% endif %}
+                    <div class="calendar-cell">
+                        <div class="calendar-day">{{ day }}</div>
+                        {% for plan in planning %}
+                            {% if plan.startTime|date("j") == day %}
+                                <div class="calendar-event">
+                                    <span>{{ plan.startTime|date("H:i") }} - {{ plan.endTime|date("H:i") }}</span>
+                                    <strong>{{ plan.name }}</strong>
+                                    <p>{{ plan.seance ? plan.seance.name : 'No seance' }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if loop.index0 % 7 == 6 or loop.last %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Calendar End -->
+    <!-- Calendar End -->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // JavaScript for Month Navigation
+        function changeMonth(offset) {
+            // Logic to change the month (e.g., via AJAX or URL parameters)
+            alert("Month navigation is not yet implemented. You can add logic to fetch data for the new month.");
+        }
+    </script>
+{% endblock %}

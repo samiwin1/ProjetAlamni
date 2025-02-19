@@ -1,0 +1,43 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}index réponses{% endblock %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block team %}{% endblock %}
+
+{% block content %}
+    <h1>Reponsereclamation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Contenue</th>
+                <th>Date_reponse</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reponsereclamation in reponsereclamations %}
+            <tr>
+                <td>{{ reponsereclamation.id }}</td>
+                <td>{{ reponsereclamation.contenue }}</td>
+                <td>{{ reponsereclamation.dateReponse ? reponsereclamation.dateReponse|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_reponsereclamation_show', {'id': reponsereclamation.id}) }}">show</a>
+                    <a href="{{ path('app_reponsereclamation_edit', {'id': reponsereclamation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

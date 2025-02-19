@@ -1,0 +1,66 @@
+{% extends 'base_front.html.twig' %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block team %}{% endblock %}
+
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-primary text-center">Mes Réclamations</h1>
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger text-center">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% if reclamations is empty %}
+        <p class="text-center">Aucune réclamation envoyée pour l'instant.</p>
+    {% else %}
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Objet</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Réponse</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reclamation in reclamations %}
+                    <tr>
+                        <td>{{ reclamation.objet }}</td>
+                        <td>{{ reclamation.description }}</td>
+                        <td>{{ reclamation.dateSoumission|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if reclamation.status == 'En attente' %}
+                                <span class="badge bg-warning">{{ reclamation.status }}</span>
+                            {% elseif reclamation.status == 'Traitée' %}
+                                <span class="badge bg-success">{{ reclamation.status }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ reclamation.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if reclamation.reponses|length > 0 %}
+                                <a href="{{ path('app_reponsereclamation_show', {'id': reclamation.reponses|first.id}) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-envelope"></i> Voir la réponse
+                                </a>
+                            {% else %}
+                                <span class="badge bg-secondary">Aucune réponse</span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
