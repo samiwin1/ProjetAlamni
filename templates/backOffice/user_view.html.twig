@@ -1,0 +1,111 @@
+{% extends 'base_back.html.twig' %}
+{% block css %}
+    {{ parent() }}
+    <style>
+        .btn-group .btn {
+            margin-right: 5px;
+        }
+        .btn-group form {
+            margin-bottom: 0;
+        }
+        .badge {
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+        .table th {
+            background-color: #f8f9fa;
+        }
+    </style>
+{% endblock %}
+{% block welc %}
+<div class="page-header">
+    <div class="card">
+        <div class="card-header">
+            <h5>Détails de l'utilisateur</h5>
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    <img src="{% if viewUser.photo %}data:image/jpeg;base64,{{ viewUser.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}" 
+                         class="img-fluid rounded-circle" 
+                         style="width: 200px; height: 200px; object-fit: cover;">
+                </div>
+                <div class="col-md-8">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th style="width: 200px;">Nom</th>
+                                <td>{{ viewUser.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Prénom</th>
+                                <td>{{ viewUser.prenom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ viewUser.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Rôle</th>
+                                <td>
+                                    <span class="badge {% if viewUser.role == 'ROLE_ADMIN' %}bg-danger{% elseif viewUser.role == 'ROLE_ELEVE' %}bg-success{% else %}bg-info{% endif %}">
+                                        {{ viewUser.role|replace({'ROLE_': ''}) }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Date d'inscription</th>
+                                <td>{{ viewUser.dateInscription|date('d/m/Y H:i') }}</td>
+                            </tr>
+                            {% if viewUser.role == 'ROLE_ELEVE' %}
+                                <tr>
+                                    <th>Niveau</th>
+                                    <td>{{ viewUser.niveau }} {{ viewUser.nomNiveau }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h6 class="mb-3">Actions rapides</h6>
+                    <a href="{{ path('user_modify', {'id': viewUser.id}) }}" 
+                       class="btn btn-info">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    <form method="post" 
+                          action="{{ path('user_delete', {'id': viewUser.id}) }}" 
+                          style="display: inline-block"
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ viewUser.id) }}">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% if viewUser.role == 'ROLE_ELEVE' %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 class="mb-3">Informations supplémentaires</h6>
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Cours suivis</h6>
+                                <!-- Ajoutez ici la liste des cours si disponible -->
+                                <p class="text-muted">Aucun cours suivi pour le moment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
