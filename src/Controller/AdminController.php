@@ -4,6 +4,9 @@ namespace App\Controller;
 use App\Entity\Reclamation;
 use App\Form\ReclamationType;
 use App\Repository\ReclamationRepository;
+use App\Entity\Reponsereclamation;
+use App\Form\ReponsereclamationType;
+use App\Repository\ReponsereclamationRepository;
 
 use App\Entity\User;
 use App\Form\UserType;
@@ -386,16 +389,58 @@ public function delete(Request $request, Message $message, EntityManagerInterfac
     ////////////////////////////////////////////////reclamation////////////////////////////////////////////
 
 
+    // #[Route('/reclamations', name: 'app_reclamation_back')]
+    // public function reclamation(ReclamationRepository $reclamationRepository): Response
+    // {
+    //     $reclamations = $reclamationRepository->findAll();
+    //     $stats = [
+    //         'En attente' => $reclamationRepository->count(['status' => 'En attente']),
+    //         'En cours' => $reclamationRepository->count(['status' => 'En cours']),
+    //         'Résolue' => $reclamationRepository->count(['status' => 'Résolue']),
+    //     ];
+
+     
+
+    //     return $this->render('backOffice/reclamation.html.twig', [
+    //         'reclamations' => $reclamations,
+    //         'stats' => $stats,
+    //     ]);
+    // }
+
     #[Route('/reclamations', name: 'app_reclamation_back')]
-    public function reclamation(ReclamationRepository $reclamationRepository): Response
-    {
-         $reclamations = $reclamationRepository->findAll();
-    
-         return $this->render('backOffice/reclamation.html.twig', [
-             'reclamations' => $reclamations,
-         ]);
-    }
-    
+        public function reclamation(ReclamationRepository $reclamationRepository, ReponsereclamationRepository $reponsereclamationRepository, Request $request
+        ): Response {
+            // 🔹 Récupération de l'email utilisateur depuis la session
+            $session = $request->getSession();
+            $userEmail = $session->get('user_email');
+
+            // 🔹 Vérification de l'utilisateur connecté
+            if (!$userEmail) {
+                $this->addFlash('error', 'Veuillez vous connecter.');
+                return $this->redirectToRoute('login');
+            }
+
+            // 🔹 Récupération des réclamations
+            $reclamations = $reclamationRepository->findAll();
+
+            // 🔹 Statistiques des statuts
+            $stats = [
+                'En attente' => $reclamationRepository->count(['status' => 'En attente']),
+                'En cours' => $reclamationRepository->count(['status' => 'En cours']),
+                'Résolue' => $reclamationRepository->count(['status' => 'Résolue']),
+            ];
+
+            // 🔹 Compter les nouvelles réponses non lues
+            $unreadResponsesCount = $reponsereclamationRepository->countUnreadResponsesForUser($userEmail);
+
+            return $this->render('backOffice/reclamation.html.twig', [
+                'reclamations' => $reclamations,
+                'stats' => $stats,
+                'unreadResponsesCount' => $unreadResponsesCount, // 🔹 Ajout du compteur pour les notifications
+            ]);
+        }
+
+
      
     #[Route('/{id}/delete', name: 'app_reclamation_delete_back', methods: ['POST'])]
     public function deleterec(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response

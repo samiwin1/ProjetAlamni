@@ -5,14 +5,16 @@ namespace App\Controller;
 use App\Entity\Reclamation;
 use App\Form\ReclamationType;
 use App\Repository\ReclamationRepository;
-
+use App\Repository\ReponsereclamationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+
 use App\Entity\User;
 use App\Repository\PlanningRepository;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Form\UserType;
 
 class FrontController extends AbstractController
@@ -26,13 +28,29 @@ class FrontController extends AbstractController
         return $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
     }
 
-    #[Route('/', name: 'app_home')]
-    public function home(Request $request, EntityManagerInterface $entityManager): Response
+    public function getUnreadResponsesCount(SessionInterface $session, ReponsereclamationRepository $reponsereclamationRepository): int
     {
+        $userEmail = $session->get('user_email');
+        if (!$userEmail) {
+            return 0; // Aucun utilisateur connecté
+        }
+        
+        return $reponsereclamationRepository->countUnreadResponsesForUser($userEmail);
+    }
+
+    #[Route('/', name: 'app_home')]
+    public function home(Request $request, EntityManagerInterface $entityManager, SessionInterface $session, ReponsereclamationRepository $reponsereclamationRepository, ): Response
+    {
+
+        $unreadResponsesCount = $this->getUnreadResponsesCount($session, $reponsereclamationRepository);
+
         $user = $this->getLoggedInUser($request, $entityManager);
         return $this->render('base_front.html.twig', [
-            'user' => $user
+            'user' => $user,
+            'unreadResponsesCount' => $unreadResponsesCount,
         ]); 
+
+
     }
 
     #[Route('/about', name: 'app_about')]

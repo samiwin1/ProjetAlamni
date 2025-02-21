@@ -7,8 +7,6 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Entity\Reclamation;
-use App\Form\ReclamationType;
-use App\Repository\ReclamationRepository;
 
 use App\Entity\Reponsereclamation;
 use App\Form\ReponsereclamationType;
@@ -18,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 
 #[Route('/reponsereclamation')]
 final class ReponsereclamationController extends AbstractController{
@@ -29,6 +29,16 @@ final class ReponsereclamationController extends AbstractController{
         ]);
     }
 
+    public function getUnreadResponsesCount(SessionInterface $session, ReponsereclamationRepository $reponsereclamationRepository): int
+    {
+        $userEmail = $session->get('user_email');
+        if (!$userEmail) {
+            return 0; // Aucun utilisateur connecté
+        }
+        
+        return $reponsereclamationRepository->countUnreadResponsesForUser($userEmail);
+    }
+   
 
     #[Route('/new/{reclamationId}', name: 'app_reponsereclamation_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, int $reclamationId): Response
@@ -62,6 +72,8 @@ final class ReponsereclamationController extends AbstractController{
         $reponsereclamation = new Reponsereclamation();
         $reponsereclamation->setReclamation($reclamation);
         $reponsereclamation->setAdmin($user); // Set the currently logged-in user
+        $reponsereclamation->setIsRead(false); // 🚨 Marquer la réponse comme non lue
+
 
         $reclamation->setStatus('Résolue'); 
         
@@ -83,34 +95,58 @@ final class ReponsereclamationController extends AbstractController{
     }
     
     
-    #[Route('/reponse/{id}', name: 'app_reponsereclamation_show', methods: ['GET'])]
-    public function show(Reponsereclamation $reponsereclamation, EntityManagerInterface $entityManager): Response
-    {
-        $reclamation = $reponsereclamation->getReclamation(); // ✅ Get the reclamation
-    
-        // 🟢 **Mise à jour du statut de la réclamation à "En cours"**
-        if ($reclamation->getStatus() === 'En attente') {
-            $reclamation->setStatus('En cours');
-            $entityManager->flush(); // Enregistre la modification en base de données
-        }
-    
-        return $this->render('reponsereclamation/show.html.twig', [
-            'reponsereclamation' => $reponsereclamation,
-            'reclamation' => $reclamation, // ✅ Pass reclamation to the template
-        ]);
-    }
-    
-
     // #[Route('/reponse/{id}', name: 'app_reponsereclamation_show', methods: ['GET'])]
-    // public function show(Reponsereclamation $reponsereclamation): Response
+    // public function show(Reponsereclamation $reponsereclamation, EntityManagerInterface $entityManager): Response
     // {
     //     $reclamation = $reponsereclamation->getReclamation(); // ✅ Get the reclamation
+    
+    //     // 🟢 **Mise à jour du statut de la réclamation à "En cours"**
+    //     if ($reclamation->getStatus() === 'En attente') {
+    //         $reclamation->setStatus('En cours');
+    //         $reponsereclamation->setIsRead(true); // ✅ Marquer comme lue
+    //         $entityManager->flush();
+            
+    //     }
     
     //     return $this->render('reponsereclamation/show.html.twig', [
     //         'reponsereclamation' => $reponsereclamation,
     //         'reclamation' => $reclamation, // ✅ Pass reclamation to the template
     //     ]);
     // }
+    #[Route('/reponse/{id}', name: 'app_reponsereclamation_show', methods: ['GET'])]
+    public function show(
+        Reponsereclamation $reponsereclamation,
+        EntityManagerInterface $entityManager,
+        ReponsereclamationRepository $reponsereclamationRepository,
+        SessionInterface $session
+    ): Response {
+        $reclamation = $reponsereclamation->getReclamation();
+    
+        // 🟢 Récupérer toutes les réponses de la réclamation
+        $allResponses = $reponsereclamationRepository->findBy(['reclamation' => $reclamation]);
+    
+        // 🟢 Marquer toutes les réponses comme "lues"
+        $updated = false;
+        foreach ($allResponses as $response) {
+            if (!$response->isRead()) {
+                $response->setIsRead(true);
+                $updated = true;
+            }
+        }
+    
+        if ($updated) {
+            $entityManager->flush(); // ✅ Mise à jour en base de données
+        }
+    
+        // 🔹 Mettre à jour le nombre de notifications non lues
+        $unreadResponsesCount = $reponsereclamationRepository->countUnreadResponsesForUser($session->get('user_email'));
+    
+        return $this->render('reponsereclamation/show.html.twig', [
+            'reponsereclamation' => $reponsereclamation,
+            'reclamation' => $reclamation,
+            'unreadResponsesCount' => $unreadResponsesCount, 
+        ]);
+    }
     
     
 
@@ -142,4 +178,7 @@ final class ReponsereclamationController extends AbstractController{
 
         return $this->redirectToRoute('app_reponsereclamation_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+
 }

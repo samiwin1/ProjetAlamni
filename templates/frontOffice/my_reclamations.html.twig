@@ -19,6 +19,16 @@
         </div>
     {% endfor %}
 
+    <div class="d-flex justify-content-end mb-3">
+        <label for="statusFilter" class="me-2 fw-bold">Filtrer par statut :</label>
+        <select id="statusFilter" class="form-select w-auto">
+            <option value="">Tous</option>
+            <option value="En attente">En attente</option>
+            <option value="En cours">En cours</option>
+            <option value="Résolue">Résolue</option>
+        </select>
+    </div>
+
     {% if reclamations is empty %}
         <p class="text-center">Aucune réclamation envoyée pour l'instant.</p>
     {% else %}
@@ -35,18 +45,29 @@
             <tbody>
                 {% for reclamation in reclamations %}
                     <tr>
-                        <td>{{ reclamation.objet }}</td>
+                        <td>
+                            {{ reclamation.objet }}
+                            {% if unreadResponsesCounts[reclamation.id] > 0 %}
+                                <span class="badge bg-danger ms-2">
+                                    {{ unreadResponsesCounts[reclamation.id] }} 
+                                    {% if unreadResponsesCounts[reclamation.id] > 1 %}Nouvelles réponses{% else %}Nouvelle réponse{% endif %}
+                                </span>
+                            {% endif %}
+                        </td>
                         <td>{{ reclamation.description }}</td>
                         <td>{{ reclamation.dateSoumission|date('d/m/Y H:i') }}</td>
                         <td>
                             {% if reclamation.status == 'En attente' %}
-                                <span class="badge bg-warning">{{ reclamation.status }}</span>
-                            {% elseif reclamation.status == 'Traitée' %}
-                                <span class="badge bg-success">{{ reclamation.status }}</span>
+                                <span class="badge bg-warning text-dark">{{ reclamation.status }}</span>
+                            {% elseif reclamation.status == 'En cours' %}
+                                <span class="badge bg-primary text-white">{{ reclamation.status }}</span>
+                            {% elseif reclamation.status == 'Résolue' %}
+                                <span class="badge bg-success text-white">{{ reclamation.status }}</span>
                             {% else %}
-                                <span class="badge bg-danger">{{ reclamation.status }}</span>
+                                <span class="badge bg-secondary text-white">{{ reclamation.status }}</span>
                             {% endif %}
                         </td>
+
                         <td>
                             {% if reclamation.reponses|length > 0 %}
                                 <a href="{{ path('app_reponsereclamation_show', {'id': reclamation.reponses|first.id}) }}" class="btn btn-primary btn-sm">
@@ -56,11 +77,31 @@
                                 <span class="badge bg-secondary">Aucune réponse</span>
                             {% endif %}
                         </td>
-
                     </tr>
                 {% endfor %}
             </tbody>
+
         </table>
     {% endif %}
 </div>
+
+<script>
+    document.getElementById("statusFilter").addEventListener("change", function () {
+        let selectedStatus = this.value.toLowerCase();
+        let rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            let statusText = row.querySelector("td:nth-child(4)").textContent.toLowerCase(); // Statut de la réclamation
+            
+            // Si aucun filtre sélectionné ou le statut correspond, afficher la ligne
+            if (selectedStatus === "" || statusText.includes(selectedStatus)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none"; // Masquer les autres lignes
+            }
+        });
+    });
+</script>
+
+
 {% endblock %}

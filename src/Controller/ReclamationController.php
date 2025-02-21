@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Reponsereclamation;
-use App\Form\ReponsereclamationType;
+
 use App\Repository\ReponsereclamationRepository;
 
 use App\Entity\User;
@@ -23,85 +22,39 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 final class ReclamationController extends AbstractController
 {
     #[Route('/reclam', name: 'app_reclamation', methods: ['GET'])]
-    public function index(ReclamationRepository $reclamationRepository): Response
+    public function index(ReclamationRepository $reclamationRepository, ): Response
     {
+        $stats = [
+            'En attente' => $reclamationRepository->count(['status' => 'En attente']),
+            'En cours' => $reclamationRepository->count(['status' => 'En cours']),
+            'Résolue' => $reclamationRepository->count(['status' => 'Résolue']),
+        ];
+
+      
+
         return $this->render('frontOffice/reclamation.html.twig', [
             'reclamations' => $reclamationRepository->findAll(),
+            'stats' => $stats,
+           
         ]);
+
+        
     }
 
-
+    public function getUnreadResponsesCount(SessionInterface $session, ReponsereclamationRepository $reponsereclamationRepository): int
+    {
+        $userEmail = $session->get('user_email');
+        if (!$userEmail) {
+            return 0; // Aucun utilisateur connecté
+        }
+        
+        return $reponsereclamationRepository->countUnreadResponsesForUser($userEmail);
+    }
    
-    //  #[Route('/reclamation/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
-
-    // public function new(Request $request, EntityManagerInterface $entityManager): Response
-    // {
-    //     $reclamation = new Reclamation();
-    //     $reclamation->setStatus('En attente'); // ✅ Définit "En attente" par défaut
-    
-    //     $form = $this->createForm(ReclamationType::class, $reclamation);
-    //     $form->handleRequest($request); 
-    
-    //     if ($form->isSubmitted()) {
-    //       // **Validate User Email**
-    //         if (!$reclamation->getUserEmail()) {
-    //             $errors[] = "L'email utilisateur est obligatoire.";
-    //         } elseif (!filter_var($reclamation->getUserEmail(), FILTER_VALIDATE_EMAIL)) {
-    //             $errors[] = "L'email utilisateur n'est pas valide.";
-    //         }
-    
-    //         // **Validate Admin Email**
-    //         if (!$reclamation->getAdminMail()) {
-    //             $errors[] = "Le destinataire est obligatoire.";
-    //         } elseif (!filter_var($reclamation->getAdminMail(), FILTER_VALIDATE_EMAIL)) {
-    //             $errors[] = "L'email administrateur n'est pas valide.";
-    //         }
-    
-    //         // **Validate Role**
-    //         if (!$reclamation->getRole()) {
-    //             $errors[] = "Veuillez sélectionner un rôle.";
-    //         }
-    
-    //         // **Validate Subject (Objet)**
-    //         if (!$reclamation->getObjet()) {
-    //             $errors[] = "L'objet de la réclamation est obligatoire.";
-    //         } elseif (strlen($reclamation->getObjet()) < 5) {
-    //             $errors[] = "L'objet doit contenir au moins 5 caractères.";
-    //         }
-    
-    //         // **Validate Description**
-    //         if (!$reclamation->getDescription()) {
-    //             $errors[] = "Veuillez entrer une description.";
-    //         } elseif (strlen($reclamation->getDescription()) < 10) {
-    //             $errors[] = "La description doit contenir au moins 10 caractères.";
-    //         }
-    
-    //         // **Show Errors or Save Data**
-    //         if (!empty($errors)) {
-    //             foreach ($errors as $error) {
-    //                 $this->addFlash('error', $error);
-    //             }
-    
-    //        } else {
-    //             // Save if all validations pass
-    //             $entityManager->persist($reclamation);
-    //             $entityManager->flush();
-    
-    //             $this->addFlash('success', 'Votre réclamation a été envoyée avec succès.');
-    //             return $this->redirectToRoute('app_reclamation');
-    //         }
-    //     }
-    
-    //     return $this->render('frontOffice/reclamation.html.twig', [
-    //         'reclamation' => $reclamation,
-    //         'form' => $form->createView(),
-    //         // 'user' => $this->getUser(), // Passer l'utilisateur connecté au template
-    //     ]);
-    // }
-
+   
 
     #[Route('/reclamation/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager): Response
+public function new(Request $request, EntityManagerInterface $entityManager, ReponsereclamationRepository $reponsereclamationRepository, ): Response
 {
     // Récupérer l'email de l'utilisateur depuis la session
     $session = $request->getSession();
@@ -173,57 +126,18 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         }
     }
 
+    $unreadResponsesCount = $this->getUnreadResponsesCount($session, $reponsereclamationRepository);
+
+
+
     return $this->render('frontOffice/reclamation.html.twig', [
         'form' => $form->createView(),
-        'user' => $user
+        'user' => $user,
+        'unreadResponsesCount' => $unreadResponsesCount, 
     ]);
 }
 
-
-    // #[Route('/reclamation/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
-    // public function new(Request $request, EntityManagerInterface $entityManager): Response
-    // {
-    //     // 🔹 Récupérer l'utilisateur connecté via la session Symfony
-    //     $user = $this->getUser();
-    
-    //     // 🔹 Vérifier si l'utilisateur est bien connecté
-    //     if (!$user instanceof User) {
-    //         $this->addFlash('error', 'Veuillez vous connecter pour envoyer une réclamation.');
-    //         return $this->redirectToRoute('login');
-    //     }
-    
-    //     // 🔍 Debugging pour voir les valeurs de l'utilisateur connecté
-    //     dump($user); 
-    
-    //     // 🔹 Création d'une nouvelle réclamation avec des valeurs pré-remplies
-    //     $reclamation = new Reclamation();
-    //     $reclamation->setUser($user); // Associe l'utilisateur connecté
-    //     $reclamation->setUserEmail($user->getEmail()); // Remplit automatiquement l'email
-    //     $reclamation->setRole($user->getRole()); // Remplit automatiquement le rôle
-    //     $reclamation->setStatus('En attente');
-    
-    //     // 🔹 Création du formulaire avec des champs désactivés (Lecture seule)
-    //     $form = $this->createForm(ReclamationType::class, $reclamation, [
-    //         'attr' => ['novalidate' => 'novalidate']
-    //     ]);
-    
-    //     dump($form); // 🔍 Vérifie si le formulaire est bien généré
-    
-    //     $form->handleRequest($request);
-    
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $entityManager->persist($reclamation);
-    //         $entityManager->flush();
-    
-    //         $this->addFlash('success', 'Votre réclamation a été envoyée avec succès.');
-    //         return $this->redirectToRoute('app_reclamation_new');
-    //     }
-    
-    //     return $this->render('frontOffice/reclamation.html.twig', [
-    //         'form' => $form->createView(),
-    //         'user' => $user // ✅ Passer l'utilisateur au template
-    //     ]);
-    // }
+// }
     
 
     #[Route('/{id}/delete', name: 'app_reclamation_delete', methods: ['POST'])]
@@ -291,66 +205,103 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     }
     
 
-
     #[Route('/my-reclamations', name: 'app_my_reclamations', methods: ['GET'])]
-    public function myReclamations(ReclamationRepository $reclamationRepository, ReponsereclamationRepository $reponsereclamationRepository, Request $request): Response
-    {
-        // 🔹 Get user email from session
+    public function myReclamations(
+        ReclamationRepository $reclamationRepository, 
+        ReponsereclamationRepository $reponsereclamationRepository, 
+        Request $request
+    ): Response {
         $session = $request->getSession();
         $userEmail = $session->get('user_email');
     
-        // 🔹 Check if the user is logged in
         if (!$userEmail) {
             $this->addFlash('error', 'Veuillez vous connecter pour voir vos réclamations.');
             return $this->redirectToRoute('login');
         }
     
-        // 🔎 Fetch all complaints associated with this user
         $reclamations = $reclamationRepository->findBy(['user_email' => $userEmail], ['date_soumission' => 'DESC']);
-    
-        // 🔎 Fetch responses for each complaint
         $reponses = [];
+        $unreadResponsesCounts = []; // 🔹 Stocke le nombre de réponses non lues par réclamation
+    
         foreach ($reclamations as $reclamation) {
             $response = $reponsereclamationRepository->findOneBy(['reclamation' => $reclamation]);
             if ($response) {
                 $reponses[$reclamation->getId()] = $response;
             }
+    
+            // 🔹 Compter les réponses non lues pour chaque réclamation
+            $unreadResponsesCounts[$reclamation->getId()] = $reponsereclamationRepository->count([
+                'reclamation' => $reclamation,
+                'isRead' => false
+            ]);
         }
+    
+        // 🟢 Récupérer le nombre total de réponses non lues
+        $unreadResponsesCount = $this->getUnreadResponsesCount($session, $reponsereclamationRepository);
     
         return $this->render('frontOffice/my_reclamations.html.twig', [
             'reclamations' => $reclamations,
             'reponses' => $reponses,
-            'userEmail' => $userEmail, 
+            'userEmail' => $userEmail,
+            'unreadResponsesCount' => $unreadResponsesCount, 
+            'unreadResponsesCounts' => $unreadResponsesCounts, // ✅ Ajout du tableau des notifications par réclamation
         ]);
     }
     
+    
 
-
-// #[Route('/my-reclamations', name: 'app_my_reclamations', methods: ['GET'])]
-// public function myReclamations(ReclamationRepository $reclamationRepository, Request $request): Response
+//     #[Route('/my-reclamations', name: 'app_my_reclamations', methods: ['GET'])]
+// public function myReclamations(
+//     ReclamationRepository $reclamationRepository, 
+//     ReponsereclamationRepository $reponsereclamationRepository, 
+//     Request $request
+// ): Response
 // {
-//     // 🔹 Récupérer l'email de l'utilisateur depuis la session
 //     $session = $request->getSession();
 //     $userEmail = $session->get('user_email');
 
-//     // 🔹 Vérifier si un utilisateur est connecté
 //     if (!$userEmail) {
 //         $this->addFlash('error', 'Veuillez vous connecter pour voir vos réclamations.');
 //         return $this->redirectToRoute('login');
 //     }
 
-//     // 🔎 Récupérer **toutes** les réclamations associées à cet email
-//     $reclamations = $reclamationRepository->findBy(['user_email' => $userEmail], ['date_soumission' => 'DESC']); // Tri par date décroissante
+//     $reclamations = $reclamationRepository->findBy(['user_email' => $userEmail], ['date_soumission' => 'DESC']);
+//     $reponses = [];
+    
+//     foreach ($reclamations as $reclamation) {
+//         $response = $reponsereclamationRepository->findOneBy(['reclamation' => $reclamation]);
+//         if ($response) {
+//             $reponses[$reclamation->getId()] = $response;
+//         }
+//     }
 
-//     // 🔍 Vérification dans la console Symfony (décommenter en cas de doute)
-//     // dump($reclamations); die();
+//     // 🟢 Récupérer le nombre de réponses non lues
+//     $unreadResponsesCount = $this->getUnreadResponsesCount($session, $reponsereclamationRepository);
+
 
 //     return $this->render('frontOffice/my_reclamations.html.twig', [
 //         'reclamations' => $reclamations,
-//         'userEmail' => $userEmail, // Pour affichage dans la vue
+//         'reponses' => $reponses,
+//         'userEmail' => $userEmail, 
+//         'unreadResponsesCount' => $unreadResponsesCount, // ✅ Ajout de la variable
 //     ]);
 // }
 
+
+    #[Route('/reclamations/stats', name: 'app_reclamation_stats', methods: ['GET'])]
+    public function reclamationStats(ReclamationRepository $reclamationRepository): Response
+    {
+        $stats = [
+            'En attente' => $reclamationRepository->count(['status' => 'En attente']),
+            'En cours' => $reclamationRepository->count(['status' => 'En cours']),
+            'Résolue' => $reclamationRepository->count(['status' => 'Résolue']),
+        ];
+    
+        return $this->render('backOffice/reclamation.html.twig', [
+            'stats' => $stats,
+        ]);
+    }
+    
 
 
 }
