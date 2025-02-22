@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-use App\Repository\UserType;
+
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -42,23 +42,20 @@ class User
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom_niveau = null;
 
+
+
     /**
      * @var Collection<int, Planning>
      */
     #[ORM\OneToMany(targetEntity: Planning::class, mappedBy: 'user')]
     private Collection $plannings;
 
-    /**
-     * @var Collection<int, Reponsereclamation>
-     */
-    #[ORM\OneToMany(targetEntity: Reponsereclamation::class, mappedBy: 'admin_id')]
-    private Collection $reponsereclamations;
-
     public function __construct()
     {
         $this->plannings = new ArrayCollection();
-        $this->reponsereclamations = new ArrayCollection();
     }
+
+    
 
     public function getId(): ?int
     {
@@ -88,9 +85,9 @@ class User
     }
 
     public function getRoles(): array
-{
-    return [$this->role ?? 'ROLE_USER']; // Retourne un tableau contenant le rôle de l'utilisateur
-}
+    {
+        return [$this->role ?? 'ROLE_USER']; // Ensure this returns an array
+    }
 
     
     public function getEmail(): ?string
@@ -204,34 +201,14 @@ class User
 
         return $this;
     }
+    public function isTeacher(): bool
+{
+    return in_array('ROLE_TEACHER', $this->getRoles(), true);
+}
 
-    /**
-     * @return Collection<int, Reponsereclamation>
-     */
-    public function getReponsereclamations(): Collection
-    {
-        return $this->reponsereclamations;
-    }
+public function isStudent(): bool
+{
+    return in_array('ROLE_STUDENT', $this->getRoles(), true);
+}
 
-    public function addReponsereclamation(Reponsereclamation $reponsereclamation): static
-    {
-        if (!$this->reponsereclamations->contains($reponsereclamation)) {
-            $this->reponsereclamations->add($reponsereclamation);
-            $reponsereclamation->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReponsereclamation(Reponsereclamation $reponsereclamation): static
-    {
-        if ($this->reponsereclamations->removeElement($reponsereclamation)) {
-            // set the owning side to null (unless already changed)
-            if ($reponsereclamation->getAdmin() === $this) {
-                $reponsereclamation->setAdmin(null);
-            }
-        }
-
-        return $this;
-    }
 }

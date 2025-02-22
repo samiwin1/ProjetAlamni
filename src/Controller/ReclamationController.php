@@ -2,9 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Reponsereclamation;
-use App\Form\ReponsereclamationType;
-use App\Repository\ReponsereclamationRepository;
 
 use App\Entity\User;
 use App\Form\UserType;
@@ -268,66 +265,44 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     }
 
 
-
-
-    #[Route('/my-reclamations', name: 'app_my_reclamations', methods: ['GET'])]
-    public function myReclamations(ReclamationRepository $reclamationRepository, ReponsereclamationRepository $reponsereclamationRepository, Request $request): Response
-    {
-        // 🔹 Get user email from session
-        $session = $request->getSession();
-        $userEmail = $session->get('user_email');
-    
-        // 🔹 Check if the user is logged in
-        if (!$userEmail) {
-            $this->addFlash('error', 'Veuillez vous connecter pour voir vos réclamations.');
-            return $this->redirectToRoute('login');
-        }
-    
-        // 🔎 Fetch all complaints associated with this user
-        $reclamations = $reclamationRepository->findBy(['user_email' => $userEmail], ['date_soumission' => 'DESC']);
-    
-        // 🔎 Fetch responses for each complaint
-        $reponses = [];
-        foreach ($reclamations as $reclamation) {
-            $response = $reponsereclamationRepository->findOneBy(['reclamation' => $reclamation]);
-            if ($response) {
-                $reponses[$reclamation->getId()] = $response;
-            }
-        }
-    
-        return $this->render('frontOffice/my_reclamations.html.twig', [
-            'reclamations' => $reclamations,
-            'reponses' => $reponses,
-            'userEmail' => $userEmail, 
-        ]);
-    }
-    
-
-
-// #[Route('/my-reclamations', name: 'app_my_reclamations', methods: ['GET'])]
+//     #[Route('/my-reclamations', name: 'app_my_reclamations', methods: ['GET'])]
 // public function myReclamations(ReclamationRepository $reclamationRepository, Request $request): Response
 // {
-//     // 🔹 Récupérer l'email de l'utilisateur depuis la session
-//     $session = $request->getSession();
-//     $userEmail = $session->get('user_email');
+//     // 🔴 TEMPORAIRE : Simuler un utilisateur avec un email fixe
+//     $userEmail = trim("roua@gmail.com"); // Changez cet email si nécessaire
 
-//     // 🔹 Vérifier si un utilisateur est connecté
-//     if (!$userEmail) {
-//         $this->addFlash('error', 'Veuillez vous connecter pour voir vos réclamations.');
-//         return $this->redirectToRoute('login');
-//     }
-
-//     // 🔎 Récupérer **toutes** les réclamations associées à cet email
-//     $reclamations = $reclamationRepository->findBy(['user_email' => $userEmail], ['date_soumission' => 'DESC']); // Tri par date décroissante
-
-//     // 🔍 Vérification dans la console Symfony (décommenter en cas de doute)
-//     // dump($reclamations); die();
+//     // 🔎 Récupérer toutes les réclamations de cet utilisateur temporaire
+//     $reclamations = $reclamationRepository->findBy(['user_email' => $userEmail]);
 
 //     return $this->render('frontOffice/my_reclamations.html.twig', [
 //         'reclamations' => $reclamations,
-//         'userEmail' => $userEmail, // Pour affichage dans la vue
+//         'userEmail' => $userEmail, // Pour l'afficher dans le front
 //     ]);
 // }
+#[Route('/my-reclamations', name: 'app_my_reclamations', methods: ['GET'])]
+public function myReclamations(ReclamationRepository $reclamationRepository, Request $request): Response
+{
+    // 🔹 Récupérer l'email de l'utilisateur depuis la session
+    $session = $request->getSession();
+    $userEmail = $session->get('user_email');
+
+    // 🔹 Vérifier si un utilisateur est connecté
+    if (!$userEmail) {
+        $this->addFlash('error', 'Veuillez vous connecter pour voir vos réclamations.');
+        return $this->redirectToRoute('login');
+    }
+
+    // 🔎 Récupérer **toutes** les réclamations associées à cet email
+    $reclamations = $reclamationRepository->findBy(['user_email' => $userEmail], ['date_soumission' => 'DESC']); // Tri par date décroissante
+
+    // 🔍 Vérification dans la console Symfony (décommenter en cas de doute)
+    // dump($reclamations); die();
+
+    return $this->render('frontOffice/my_reclamations.html.twig', [
+        'reclamations' => $reclamations,
+        'userEmail' => $userEmail, // Pour affichage dans la vue
+    ]);
+}
 
 
 

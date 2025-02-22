@@ -1,13 +1,11 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\ReclamationRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: ReclamationRepository::class)]
 class Reclamation
@@ -17,12 +15,9 @@ class Reclamation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reclamations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-
-    #[ORM\OneToMany(mappedBy: 'reclamation', targetEntity: Reponsereclamation::class, cascade: ['remove'], orphanRemoval: true)]
-    private Collection $reponses;
+    private ?User $user = null; // ✅ Correction du nom de la propriété
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "L'email est obligatoire.")]
@@ -56,12 +51,11 @@ class Reclamation
     {
         $this->date_soumission = new \DateTime();
         $this->status = 'En attente';
-        $this->reponses = new ArrayCollection();
     }
 
     public function getId(): ?int { return $this->id; }
 
-    public function getUser(): ?User { return $this->user; }
+    public function getUser(): ?User { return $this->user; } // ✅ Utilisation correcte de la relation
     public function setUser(?User $user): self { $this->user = $user; return $this; }
 
     public function getUserEmail(): ?string { return $this->user_email; }
@@ -80,38 +74,7 @@ class Reclamation
     public function setDescription(string $description): self { $this->description = $description; return $this; }
 
     public function getDateSoumission(): ?\DateTimeInterface { return $this->date_soumission; }
-    public function setDateSoumission(\DateTimeInterface $date_soumission): self { $this->date_soumission = $date_soumission; return $this; }
-
     public function getStatus(): ?string { return $this->status; }
     public function setStatus(string $status): self { $this->status = $status; return $this; }
-
-    /**
-     * @return Collection<int, Reponsereclamation>
-     */
-    public function getReponses(): Collection
-    {
-        return $this->reponses;
-    }
-
-    public function addReponse(Reponsereclamation $reponse): static
-    {
-        if (!$this->reponses->contains($reponse)) {
-            $this->reponses->add($reponse);
-            $reponse->setReclamation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReponse(Reponsereclamation $reponse): static
-    {
-        if ($this->reponses->removeElement($reponse)) {
-            // set the owning side to null (unless already changed)
-            if ($reponse->getReclamation() === $this) {
-                $reponse->setReclamation(null);
-            }
-        }
-
-        return $this;
-    }
 }
+

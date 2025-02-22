@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Repository\PlanningRepository;
 use App\Form\UserType;
 
+
 class FrontController extends AbstractController
 {
     private function getLoggedInUser(Request $request, EntityManagerInterface $entityManager): ?User
@@ -53,7 +54,7 @@ class FrontController extends AbstractController
     #[Route('/front/reclamation/{id}', name: 'app_reclamation_front_show', methods: ['GET'])]
     public function showFront(Reclamation $reclamation): Response
     {
-          return $this->render('reclamation/show.html.twig', [
+          return $this->render('frontOffice/reclamation_show.html.twig', [
         'reclamation' => $reclamation,
     ]);
 }
@@ -66,20 +67,37 @@ class FrontController extends AbstractController
             'user' => $user
         ]); 
     }
+  // src/Controller/YourController.php
 
-    #[Route('/facility', name: 'app_facility')]
-    public function facility(Request $request, EntityManagerInterface $entityManager, PlanningRepository $planningRepository): Response
-    {
-        $user = $this->getLoggedInUser($request, $entityManager);
-        $planning = $planningRepository->findAll();
-    
-        return $this->render('frontOffice/facility.html.twig', [
-            'user' => $user,
-            'planning' => $planning
-        ]);
+#[Route('/facility', name: 'app_facility')]
+public function facility(Request $request, EntityManagerInterface $entityManager, PlanningRepository $planningRepository): Response
+{
+    $user = $this->getLoggedInUser($request, $entityManager);
+
+    if (!$user) {
+        $this->addFlash('error', 'Veuillez vous connecter');
+        return $this->redirectToRoute('login');
     }
-    
 
+    $planning = [];
+
+    // Check if the user is a student
+    if (in_array('ROLE_ELEVE', $user->getRoles())) {
+        $planning = $planningRepository->findPlanningForUserLevel($user->getNiveau());
+    }
+    // Check if the user is a teacher
+    elseif (in_array('ROLE_ENSEIGNANT', $user->getRoles())) {
+        $teacherName = $user->getNom() . ' ' . $user->getPrenom();
+        $planning = $planningRepository->findPlanningForTeacher($teacherName);
+    }
+
+    return $this->render('frontOffice/facility.html.twig', [
+        'user' => $user,
+        'planning' => $planning
+    ]);
+
+}
+    
     #[Route('/team', name: 'app_team')]
     public function team(Request $request, EntityManagerInterface $entityManager): Response
     {

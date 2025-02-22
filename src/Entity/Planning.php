@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\PlanningRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: PlanningRepository::class)]
 #[ORM\HasLifecycleCallbacks] // Enables lifecycle event callbacks
@@ -35,6 +37,14 @@ class Planning
 
     #[ORM\ManyToOne(inversedBy: 'plannings')]
     private ?User $user = null;
+  
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)] // Allow null temporarily
+    private ?User $teacher = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\NotBlank(message: "Student level cannot be blank.")]
+    private ?string $studentLevel = null;
 
 
     public function getId(): ?int
@@ -122,5 +132,27 @@ class Planning
 
         return $this;
     }
+    public function getTeacher(): ?User
+    {
+        return $this->teacher;
+    }
+
+    public function setTeacher(?User $teacher): static
+    {
+        $this->teacher = $teacher;
+        return $this;
+    }
+    // Add getter and setter for studentLevel
+    public function getStudentLevel(): ?string
+    {
+        return $this->studentLevel;
+    }
+
+    public function setStudentLevel(?string $studentLevel): static
+    {
+        $this->studentLevel = $studentLevel;
+        return $this;
+    }
+
 }
 

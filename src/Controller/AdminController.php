@@ -15,7 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ReponseRepository;
 use App\Repository\MessageRepository;
 use App\Entity\Message;
-
 class AdminController extends AbstractController
 {
     private function getLoggedInUser(Request $request, EntityManagerInterface $entityManager): ?User
@@ -121,6 +120,7 @@ class AdminController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+  
 
     #[Route('/profile', name: 'user_profile')]
     public function profile(Request $request, EntityManagerInterface $entityManager): Response
@@ -343,45 +343,7 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/conditions-utilisation', name: 'conditions_utilisation')]
-public function conditionsUtilisation(): Response
-{
-    return $this->render('backOffice/condition_utilisation.html.twig');
-}
 
-
-    #[Route('/discussions', name: 'discussions')]
-    public function dscussion(ReponseRepository $reponseRepository, MessageRepository $messageRepository): Response
-    { $messages = $messageRepository->findAll();
-        $reponses = $reponseRepository->findAll(); 
-        return $this->render('backOffice/discussions.html.twig',[
-            'messages' => $messages,
-            'reponses' => $reponses,
-        ]);
-
-    }
-    #[Route('/discussions/edit', name: 'discussionsedit')]
-    public function descussion(ReponseRepository $reponseRepository, MessageRepository $messageRepository): Response
-    { $messages = $messageRepository->findAll();
-        $reponses = $reponseRepository->findAll(); 
-        return $this->render('backOffice/discussionsedit.html.twig',[
-            'messages' => $messages,
-            'reponses' => $reponses,
-        ]);
-
-    }
-    #[Route('/{id}', name: 'ddelete', methods: ['POST'])]
-public function delete(Request $request, Message $message, EntityManagerInterface $entityManager): Response
-{
-    if ($this->isCsrfTokenValid('delete'.$message->getId(), $request->request->get('_token'))) {
-        $entityManager->remove($message);
-        $entityManager->flush();
-    }
-
-    return $this->redirectToRoute('app_message_index', [], Response::HTTP_SEE_OTHER);
-}
-
-   
 
     ////////////////////////////////////////////////reclamation////////////////////////////////////////////
 
