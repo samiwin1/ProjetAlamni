@@ -44,11 +44,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom_niveau = null;
 
+#[ORM\Column(length: 64, nullable: true)]
+    private ?string $resetToken = null;
+
+
     /**
      * @var Collection<int, Planning>
      */
     #[ORM\OneToMany(targetEntity: Planning::class, mappedBy: 'user')]
     private Collection $plannings;
+
+    
 
     public function __construct()
     {
@@ -207,6 +213,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNomNiveau(?string $nom_niveau): self
     {
         $this->nom_niveau = $nom_niveau;
+        return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): self
+    {
+        $this->resetToken = $resetToken;
         return $this;
     }
 

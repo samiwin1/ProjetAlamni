@@ -137,7 +137,7 @@
 						{% if app.user %}
 							<div class="nav-item dropdown">
 								<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-									<img src="{{ app.user.photo ? asset('uploads/photos/' ~ app.user.photo) : asset('images/default-avatar.png') }}" class="rounded-circle me-2" alt="{{ app.user.nom }}" style="width: 40px; height: 40px; object-fit: cover;">
+									<img src="{% if user.photo %}data:image/jpeg;base64,{{ user.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}"  class="rounded-circle me-2" alt="{{ app.user.nom }}" style="width: 40px; height: 40px; object-fit: cover;">
 									<span>{{ app.user.nom }}</span>
 								</a>
 								<div class="dropdown-menu">
@@ -150,7 +150,7 @@
 										</a>
 									{% endif %}
 									{% if app.user.roles[0] == 'ROLE_ENSEIGNANT' %}
-										<a href="{{ path('teacher_classes') }}" class="dropdown-item">
+										<a href="" class="dropdown-item">
 											<i class="fas fa-chalkboard-teacher me-2"></i>Mes Classes
 										</a>
 									{% endif %}

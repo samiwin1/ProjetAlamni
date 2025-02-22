@@ -19,9 +19,9 @@
         <div class="profile-header">
             <h2>Modifier mon profil</h2>
             {% if user.photo %}
-                <img src="data:image/jpeg;base64,{{ user.photo }}" alt="Profile" class="profile-image" id="preview-image">
+                <img src="{% if user.photo %}data:image/jpeg;base64,{{ user.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}"  alt="Profile" class="profile-image" id="preview-image">
             {% else %}
-                <img src="{{ asset('back/images/avatar-default.jpg') }}" alt="Default Profile" class="profile-image" id="preview-image">
+                <img src="{% if user.photo %}data:image/jpeg;base64,{{ user.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}"  alt="Default Profile" class="profile-image" id="preview-image">
             {% endif %}
         </div>
 

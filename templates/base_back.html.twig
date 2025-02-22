@@ -18,6 +18,29 @@
     
     <!-- Custom Styles -->
     <style>
+    #searchInput {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--button-blue);
+    box-shadow: 0 0 0 2px rgba(3, 169, 244, 0.2);
+}
+
+mark {
+    background-color: #fff3cd;
+    padding: 2px;
+    border-radius: 2px;
+}
+
+.user-row {
+    transition: all 0.3s ease;
+}
     /* Styles pour le lien de déconnexion */
     .logout-item {
         margin-top: auto;
@@ -96,12 +119,36 @@
 
     .main-menu-header {
         padding: 20px;
+        text-align: center;
         border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
+    .main-menu-header .img-radius {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 10px;
+        border: 3px solid rgba(255,255,255,0.2);
+    }
+
     .user-details {
-        color: var(--white);
-        padding: 20px;
+        margin-top: 10px;
+    }
+
+    .user-name-link {
+        text-decoration: none;
+        color: white;
+    }
+
+    .user-name {
+        font-size: 16px;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .text-muted {
+        font-size: 12px;
+        opacity: 0.7;
     }
 
     .pcoded-item {
@@ -252,6 +299,7 @@
     {% endblock %}
 </head>
 
+
 <body>
     <div class="pcoded">
         <!-- Sidebar -->
@@ -262,14 +310,30 @@
             </div>
 
             <div class="main-menu-header">
-                <img src="{{ asset('back/images/avatar-4.jpg') }}" class="img-radius" alt="User-Profile-Image">
-                <div class="user-details">
-                    <a href="{{ path('user_profile') }}" class="user-name-link">
-                        <span class="user-name">Admin</span>
-                    </a>
-                    <span class="text-muted">ROLE_ADMIN</span>
-                </div>
-            </div>
+    {% if app.user %}
+        {% if app.user.photo %}
+            <img src="data:image/jpeg;base64,{{ app.user.photo }}" 
+                 class="img-radius" 
+                 alt="User-Profile-Image">
+        {% else %}
+            <img src="{{ asset('back/images/avatar-4.jpg') }}" 
+                 class="img-radius" 
+                 alt="Default-Profile-Image">
+        {% endif %}
+        
+        <div class="user-details">
+            <a href="{{ path('user_profile') }}" class="user-name-link">
+                <span class="user-name">{{ app.user.nom }} {{ app.user.prenom }}</span>
+            </a>
+            <span class="text-muted">
+                {% for role in app.user.roles %}
+                    {{ role|replace({'ROLE_': ''}) }}
+                    {% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </span>
+        </div>
+    {% endif %}
+</div>
 
             <ul class="pcoded-item">
                 <li class="active">
@@ -303,17 +367,28 @@
         </nav>
 
         <!-- Main Content -->
+
+        
         <div class="pcoded-content">
             {% block welc %}
-            <div class="page-header">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Liste des Utilisateurs</h5>
-                        <a href="{{ path('user_add') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Ajouter
-                        </a>
-                    </div>
+            <div class="card-header">
+    <h5>Liste des Utilisateurs</h5>
+    <div class="d-flex gap-3">
+        <input type="text" 
+               id="searchInput" 
+               class="form-control" 
+               placeholder="Rechercher par nom, prénom ou email..."
+               style="width: 300px;">
+        <a href="#" class="btn btn-danger">
+            <i class="fas fa-file-pdf"></i>
+            Exporter PDF
+        </a>
+        <a href="{{ path('user_add') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Ajouter
+        </a>
+    </div>
+</div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table">
@@ -332,18 +407,19 @@
                                 <tbody>
                                     {% if users is defined %}
                                         {% for user in users %}
-                                            <tr>
-                                                <td>
-                                                    <img src="{% if user.photo %}data:image/jpeg;base64,{{ user.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}" 
-                                                         class="img-radius">
-                                                </td>
-                                                <td>{{ user.nom }}</td>
-                                                <td>{{ user.prenom }}</td>
-                                                <td>{{ user.email }}</td>
-                                                <td>
+                                            <tr class="user-row">
+                <td>
+                    <img src="{% if user.photo %}data:image/jpeg;base64,{{ user.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}" 
+                         class="img-radius">
+                </td>
+                <td class="searchable">{{ user.nom }}</td>
+                <td class="searchable">{{ user.prenom }}</td>
+                <td class="searchable">{{ user.email }}</td>
+                <td>
                                                     <span class="label {% if user.role == 'ROLE_ADMIN' %}label-danger{% elseif user.role == 'ROLE_ELEVE' %}label-success{% else %}label-info{% endif %}">
                                                         {{ user.role|replace({'ROLE_': ''}) }}
                                                     </span>
+                                                    </td>
                                                 </td>
                                                 <td>
                                                     {% if user.role == 'ROLE_ELEVE' %}
@@ -395,5 +471,46 @@
             {% endblock %}
         </div>
     </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const userRows = document.querySelectorAll('.user-row');
+
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+
+        userRows.forEach(row => {
+            const searchableFields = row.querySelectorAll('.searchable');
+            let found = false;
+
+            searchableFields.forEach(field => {
+                const text = field.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    found = true;
+                }
+            });
+
+            if (found) {
+                row.style.display = '';
+                // Mettre en surbrillance les termes trouvés
+                searchableFields.forEach(field => {
+                    const text = field.textContent;
+                    if (searchTerm !== '') {
+                        const regex = new RegExp(searchTerm, 'gi');
+                        field.innerHTML = text.replace(regex, match => `<mark>${match}</mark>`);
+                    } else {
+                        field.innerHTML = text;
+                    }
+                });
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Écouteur d'événement pour la recherche en temps réel
+    searchInput.addEventListener('input', filterTable);
+});
+</script>
 </body>
 </html>

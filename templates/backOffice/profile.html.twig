@@ -258,7 +258,7 @@
 				<p>Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.</p>
 				<div class="custom-modal-buttons">
 					<button type="button" id="cancelButton" class="btn-custom btn-custom-secondary">Annuler</button>
-					<form id="deleteForm" method="post" action="{{ path('user_profile_delete') }}">
+					<form id="deleteForm" method="post" >
 						<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
 						<button type="submit" class="btn-custom btn-custom-danger">Confirmer la suppression</button>
 					</form>

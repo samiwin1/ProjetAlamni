@@ -86,12 +86,6 @@ class UserType extends AbstractType
             $builder->add('mot_de_passe', PasswordType::class, [
                 'required' => false,
                 'mapped' => false,
-                'constraints' => [
-                    new Length([
-                        'min' => 8,
-                        'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères'
-                    ])
-                ],
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Laissez vide pour garder le même mot de passe'
@@ -101,15 +95,7 @@ class UserType extends AbstractType
             $builder
                 ->add('mot_de_passe', PasswordType::class, [
                     'required' => true,
-                    'constraints' => [
-                        new NotBlank([
-                            'message' => 'Le mot de passe est requis'
-                        ]),
-                        new Length([
-                            'min' => 8,
-                            'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères'
-                        ])
-                    ],
+                    'mapped' => true,
                     'attr' => [
                         'class' => 'form-control',
                         'placeholder' => 'Minimum 8 caractères'

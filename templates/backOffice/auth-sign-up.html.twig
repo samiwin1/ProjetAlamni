@@ -192,16 +192,16 @@
                         <div class="error-message"></div>
                     </div>
 
-                    {# Conditions d'utilisation #}
-                    <div class="form-group mb-4">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="terms">
-                            <label class="custom-control-label" for="terms">
-    J'accepte les <a href="{{ path('conditions_utilisation') }}">conditions d'utilisation</a>
-</label>
-                            <div class="error-message"></div>
-                        </div>
-                    </div>
+                   {# Conditions d'utilisation #}
+<div class="form-group mb-4">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="terms" name="terms" required>
+        <label class="custom-control-label" for="terms">
+            J'accepte les <a href="{{ path('conditions_utilisation') }}" id="termsLink">conditions d'utilisation</a>
+        </label>
+        <div class="error-message"></div>
+    </div>
+</div>
 
                     <button type="submit" class="btn btn-primary w-100 mb-3">Créer Mon Compte</button>
 
@@ -395,9 +395,14 @@
                     }
                 });
             }
+            
 
             // Initialisation
             toggleNiveauFields();
         });
+
+
+       
+        
     </script>
 {% endblock %}

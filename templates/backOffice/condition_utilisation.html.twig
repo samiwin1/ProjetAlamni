@@ -105,12 +105,13 @@
                 // Stocker l'acceptation
                 localStorage.setItem('termsAccepted', 'true');
                 
-                // Fermer la fenêtre si ouverte dans une nouvelle fenêtre
-                if (window.opener && !window.opener.closed) {
+                // Si la fenêtre a été ouverte depuis la page d'inscription
+                if (window.opener) {
+                    // Cocher la case dans la page parent
                     window.opener.document.getElementById('terms').checked = true;
                     window.close();
                 } else {
-                    // Sinon, rediriger vers la page d'inscription
+                    // Redirection si ouvert directement
                     window.location.href = '{{ path('app_signin') }}';
                 }
             });
