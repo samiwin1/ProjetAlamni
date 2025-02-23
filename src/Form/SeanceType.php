@@ -15,12 +15,17 @@ class SeanceType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'required' => false, // Disable Symfony's required validation
+                'required' => false, // Allow null values
+                'attr' => [
+                    'placeholder' => 'Enter seance name',
+                ],
             ])
             ->add('description', TextareaType::class, [
-                'required' => false, // Disable Symfony's required validation
-            ])
-        ;
+                'required' => false, // Allow null values
+                'attr' => [
+                    'placeholder' => 'Enter seance description',
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

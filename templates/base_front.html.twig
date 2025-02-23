@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
+
     
     {# Dans base_front.html.twig #}
 
@@ -22,6 +23,7 @@
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
 
     <!-- Libraries Stylesheet -->
     <link rel="stylesheet" href="{{ asset('lib/animate/animate.min.css') }}">
@@ -35,6 +37,46 @@
 
     <!-- Styles pour le dropdown utilisateur -->
     <style>
+    #calendar {
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+/* Calendar Event Styles */
+.fc-daygrid-event {
+    background-color: #007bff !important; /* Change color */
+    color: white !important;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 14px;
+}
+
+.fc-daygrid-event:hover {
+    background-color: #0056b3 !important;
+    cursor: pointer;
+    transform: scale(1.05);
+}
+
+/* Tooltip Style */
+.fc-popover {
+    background: #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.fc-toolbar {
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
         .nav-item.dropdown .nav-link {
             display: flex;
             align-items: center;
@@ -107,29 +149,13 @@
             <a href="{{ path('app_classes') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_classes' %}active{% endif %}">Classes</a>
             <a href="{{ path('app_contact') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Contact Us</a>
             <a href="{{ path('app_facility') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_facility' %}active{% endif %}"> Planning</a>
-            {% set unreadResponsesCount = unreadResponsesCount ?? 0 %}
-
-           <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle {% if app.request.get('_route') in ['app_reclamation_new', 'app_my_reclamations', 'app_reclamation_front_show', 'app_index'] %}active{% endif %}" data-bs-toggle="dropdown">
-                    Réclamations
-                    {% if unreadResponsesCount > 0 %}
-                        <span class="badge bg-danger">{{ unreadResponsesCount }}</span>
-                    {% endif %}
-                </a>
-                <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
-                    <a href="{{ path('app_reclamation_new') }}" class="dropdown-item {% if app.request.get('_route') == 'app_reclamation_new' %}active{% endif %}">Envoyer Réclamation</a>
-                    <a href="{{ path('app_my_reclamations') }}" class="dropdown-item {% if app.request.get('_route') == 'app_my_reclamations' %}active{% endif %}">Mes réclamations {% if unreadResponsesCount > 0 %}
-                        <span class="badge bg-danger">{{ unreadResponsesCount }}</span>
-                    {% endif %}</a>
-                   
-                </div>
+            <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle {% if app.request.get('_route') in ['app_reclamation_new', 'app_reclamation_front_show'] %}active{% endif %}" data-bs-toggle="dropdown">reclamations</a>
+                    <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
+                        <a href="{{ path('app_reclamation_new') }}" class="dropdown-item {% if app.request.get('_route') == 'app_reclamation' %}active{% endif %}">envoyer réclamation</a>
+                        <a href="{{ path('app_my_reclamations') }}" class="dropdown-item {% if app.request.get('_route') == 'app_my_reclamations' %}active{% endif %}">Mes réclamations</a>
+                    </div>
             </div>
-
-
-
-
-
-            <a href="{{ path('app_message_index') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Boite de discussion</a>
 
         </div>
 
@@ -556,6 +582,7 @@
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>

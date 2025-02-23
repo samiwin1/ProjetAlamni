@@ -88,11 +88,10 @@ class User
     }
 
     public function getRoles(): array
-{
-    return [$this->role ?? 'ROLE_USER']; // Retourne un tableau contenant le rôle de l'utilisateur
-}
+    {
+        return [$this->role ?? 'ROLE_USER'];
+    }
 
-    
     public function getEmail(): ?string
     {
         return $this->email;
@@ -196,7 +195,6 @@ class User
     public function removePlanning(Planning $planning): static
     {
         if ($this->plannings->removeElement($planning)) {
-            // set the owning side to null (unless already changed)
             if ($planning->getUser() === $this) {
                 $planning->setUser(null);
             }
@@ -205,33 +203,13 @@ class User
         return $this;
     }
 
-    /**
-     * @return Collection<int, Reponsereclamation>
-     */
-    public function getReponsereclamations(): Collection
+    public function isTeacher(): bool
     {
-        return $this->reponsereclamations;
+        return in_array('ROLE_TEACHER', $this->getRoles(), true);
     }
 
-    public function addReponsereclamation(Reponsereclamation $reponsereclamation): static
+    public function isStudent(): bool
     {
-        if (!$this->reponsereclamations->contains($reponsereclamation)) {
-            $this->reponsereclamations->add($reponsereclamation);
-            $reponsereclamation->setAdmin($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReponsereclamation(Reponsereclamation $reponsereclamation): static
-    {
-        if ($this->reponsereclamations->removeElement($reponsereclamation)) {
-            // set the owning side to null (unless already changed)
-            if ($reponsereclamation->getAdmin() === $this) {
-                $reponsereclamation->setAdmin(null);
-            }
-        }
-
-        return $this;
+        return in_array('ROLE_STUDENT', $this->getRoles(), true);
     }
 }

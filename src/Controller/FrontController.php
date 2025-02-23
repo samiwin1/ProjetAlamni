@@ -84,19 +84,34 @@ class FrontController extends AbstractController
             'user' => $user
         ]); 
     }
-
     #[Route('/facility', name: 'app_facility')]
     public function facility(Request $request, EntityManagerInterface $entityManager, PlanningRepository $planningRepository): Response
     {
         $user = $this->getLoggedInUser($request, $entityManager);
-        $planning = $planningRepository->findAll();
+    
+        if (!$user) {
+            $this->addFlash('error', 'Veuillez vous connecter');
+            return $this->redirectToRoute('login');
+        }
+    
+        $planning = [];
+    
+        // Check if the user is a student
+        if (in_array('ROLE_ELEVE', $user->getRoles())) {
+            $planning = $planningRepository->findPlanningForUserLevel($user->getNiveau());
+        }
+        // Check if the user is a teacher
+        elseif (in_array('ROLE_ENSEIGNANT', $user->getRoles())) {
+            $teacherName = $user->getNom() . ' ' . $user->getPrenom();
+            $planning = $planningRepository->findPlanningForTeacher($teacherName);
+        }
     
         return $this->render('frontOffice/facility.html.twig', [
             'user' => $user,
             'planning' => $planning
         ]);
-    }
     
+    }
 
     #[Route('/team', name: 'app_team')]
     public function team(Request $request, EntityManagerInterface $entityManager): Response

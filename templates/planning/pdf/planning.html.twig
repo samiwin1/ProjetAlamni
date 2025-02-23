@@ -1,0 +1,52 @@
+{# templates/planning/pdf/planning.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Planning Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Planning Report</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Seance</th>
+                <th>Teacher</th>
+                <th>Student Level</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Uploaded Date</th>
+                <th>Modified Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for planning in plannings %}
+                <tr>
+                    <td>{{ planning.id }}</td>
+                    <td>{{ planning.name }}</td>
+                    <td>{{ planning.seance ? planning.seance.name : 'No Seance' }}</td>
+                    <td>{{ planning.teacher ? planning.teacher.getNom() ~ ' ' ~ planning.teacher.getPrenom() : 'No Teacher' }}</td>
+                    <td>{{ planning.studentLevel ? planning.studentLevel : 'No Level' }}</td>
+                    <td>{{ planning.startTime ? planning.startTime|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ planning.endTime ? planning.endTime|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ planning.uploadedDate ? planning.uploadedDate|date('Y-m-d H:i:s') : '' }}</td>
+                    <td>{{ planning.modifiedDate ? planning.modifiedDate|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="9" class="text-center text-muted">No records found</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
