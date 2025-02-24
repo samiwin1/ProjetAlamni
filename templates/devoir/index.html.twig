@@ -74,6 +74,7 @@
                                     <th>Date de remise</th>
                                     <th>Commentaire</th>
                                     <th>Cours</th>
+                                    <th>Support</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -86,6 +87,13 @@
                                     <td>{{ devoir.dateD ? devoir.dateD|date('d/m/Y H:i') : '-' }}</td>
                                     <td>{{ devoir.comment }}</td>
                                     <td>{{ devoir.cours.titre }}</td>
+                                    <td>
+                                        {% if devoir.supportD %}
+                                            <a href="{{ asset('uploads/supports/' ~ devoir.supportD) }}" target="_blank" class="btn btn-secondary btn-sm">Télécharger</a>
+                                        {% else %}
+                                            <span class="text-muted">Aucun</span>
+                                        {% endif %}
+                                    </td>
                                     <td class="actions-cell">
                                         <div class="btn-group">
                                             <a href="{{ path('app_devoir_edit', {'id': devoir.id}) }}" class="btn btn-warning btn-sm">

@@ -87,10 +87,20 @@
                                 </div>
                             </div>
 
+                            <!-- Support de devoir -->
+                            <div class="mb-4">
+                                <h6 class="section-title bg-white text-start text-primary pe-3">Support de devoir</h6>
+                                {% if devoir.supportD %}
+                                    <a href="{{ asset('uploads/supports/' ~ devoir.supportD) }}" target="_blank" class="btn btn-secondary">Télécharger le support</a>
+                                {% else %}
+                                    <p class="text-muted">Aucun support disponible</p>
+                                {% endif %}
+                            </div>
+
                             <!-- Action Buttons -->
                             <div class="row g-3">
                                 <div class="col-sm-6">
-                                    <a href="" class="btn btn-primary rounded-pill py-3 px-5 w-100">Back to Devoirs</a>
+                                    <a href="{{ path('app_devoir_index') }}" class="btn btn-primary rounded-pill py-3 px-5 w-100">Back to Devoirs</a>
                                 </div> 
                             </div>
              

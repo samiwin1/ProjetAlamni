@@ -8,9 +8,11 @@ use App\Form\DevoirType;
 use App\Repository\DevoirRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/devoir')]
 final class DevoirController extends AbstractController
@@ -24,7 +26,7 @@ final class DevoirController extends AbstractController
     }
 
     #[Route('/new/{coursId}', name: 'app_devoir_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, ?int $coursId = null): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, ?int $coursId = null): Response
     {
         $devoir = new Devoir();
         
@@ -39,6 +41,25 @@ final class DevoirController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $supportFile = $form->get('supportD')->getData();
+
+            if ($supportFile) {
+                $originalFilename = pathinfo($supportFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$supportFile->guessExtension();
+
+                try {
+                    $supportFile->move(
+                        $this->getParameter('support_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle exception if something happens during file upload
+                }
+
+                $devoir->setSupportD($newFilename);
+            }
+
             $entityManager->persist($devoir);
             $entityManager->flush();
 
@@ -52,27 +73,43 @@ final class DevoirController extends AbstractController
         ]);
     }
 
-
-
     #[Route('/{id}/edit', name: 'app_devoir_edit', methods: ['GET', 'POST'])]
-public function edit(Request $request, Devoir $devoir, EntityManagerInterface $entityManager): Response
-{
-    $form = $this->createForm(DevoirType::class, $devoir);
-    $form->handleRequest($request);
+    public function edit(Request $request, Devoir $devoir, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        $form = $this->createForm(DevoirType::class, $devoir);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $supportFile = $form->get('supportD')->getData();
 
-        $this->addFlash('success', 'Le devoir a été modifié avec succès.');
-        return $this->redirectToRoute('app_devoir_by_cours', ['id' => $devoir->getCours()->getId()], Response::HTTP_SEE_OTHER);
+            if ($supportFile) {
+                $originalFilename = pathinfo($supportFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$supportFile->guessExtension();
+
+                try {
+                    $supportFile->move(
+                        $this->getParameter('support_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle exception if something happens during file upload
+                }
+
+                $devoir->setSupportD($newFilename);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le devoir a été modifié avec succès.');
+            return $this->redirectToRoute('app_devoir_by_cours', ['id' => $devoir->getCours()->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('devoir/edit.html.twig', [
+            'devoir' => $devoir,
+            'form' => $form,
+        ]);
     }
-
-    // Nous passons bien "devoir" au template
-    return $this->render('devoir/edit.html.twig', [
-        'devoir' => $devoir, // Passer "devoir" ici
-        'form' => $form,
-    ]);
-}
 
     #[Route('/{id}', name: 'app_devoir_delete', methods: ['POST'])]
     public function delete(Request $request, Devoir $devoir, EntityManagerInterface $entityManager): Response

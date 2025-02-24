@@ -43,6 +43,9 @@ class Devoir
     #[Assert\NotNull(message: "Un cours doit être associé au devoir.")]
     private ?Cours $cours = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $supportD = null;
+
 
     public function getId(): ?int
     {
@@ -101,6 +104,18 @@ class Devoir
     public function setCours(?Cours $cours): static
     {
         $this->cours = $cours;
+        return $this;
+    }
+
+    public function getSupportD(): ?string
+    {
+        return $this->supportD;
+    }
+
+    public function setSupportD(string $supportD): static
+    {
+        $this->supportD = $supportD;
+
         return $this;
     }
 }

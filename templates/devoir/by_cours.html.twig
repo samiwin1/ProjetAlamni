@@ -1,8 +1,6 @@
 {% extends 'base_back.html.twig' %}
 
 {% block stylesheets %}
-   
-    
     <style>
         .table th, .table td {
             padding: 12px;
@@ -97,6 +95,15 @@
 
 {% block welc %}
     <div class="container mt-5">
+        <!-- Image du cours -->
+        <div class="text-center mb-4">
+            {% if cours.image %}
+                <img src="{{ asset('uploads/images/' ~ cours.image) }}" alt="{{ cours.titre }}" class="img-fluid" style="max-width: 400px;">
+            {% else %}
+                <span class="text-muted">Aucune image disponible</span>
+            {% endif %}
+        </div>
+
         <!-- Détails du cours -->
         <div class="course-details shadow-lg rounded-3">
             <h2 class="fw-bold"><i class="fas fa-book-open"></i> Détails du Cours</h2>
@@ -116,6 +123,16 @@
                 <tr>
                     <th class="text-end">Date de création :</th>
                     <td class="fw-semibold">{{ cours.dateC ? cours.dateC|date('d/m/Y H:i') : '-' }}</td>
+                </tr>
+                <tr>
+                    <th class="text-end">Support :</th>
+                    <td>
+                        {% if cours.supportC %}
+                            <a href="{{ asset('uploads/supports/' ~ cours.supportC) }}" target="_blank" class="btn btn-secondary">Télécharger le support</a>
+                        {% else %}
+                            <span class="text-muted">Aucun support disponible</span>
+                        {% endif %}
+                    </td>
                 </tr>
             </table>
         </div>
@@ -150,6 +167,7 @@
                                     <th>Description</th>
                                     <th>Date remise</th>
                                     <th>Commentaire</th>
+                                    <th>Support</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -161,6 +179,13 @@
                                     <td>{{ devoir.descrD }}</td>
                                     <td>{{ devoir.dateD ? devoir.dateD|date('d/m/Y H:i') : '-' }}</td>
                                     <td>{{ devoir.comment }}</td>
+                                    <td>
+                                        {% if devoir.supportD %}
+                                            <a href="{{ asset('uploads/supports/' ~ devoir.supportD) }}" target="_blank" class="btn btn-secondary btn-sm">Télécharger</a>
+                                        {% else %}
+                                            <span class="text-muted">Aucun</span>
+                                        {% endif %}
+                                    </td>
                                     <td class="actions-cell">
                                         <div class="btn-group">
                                             <a href="{{ path('app_devoir_edit', {'id': devoir.id}) }}" class="btn btn-warning btn-sm">
