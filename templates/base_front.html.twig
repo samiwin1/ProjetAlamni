@@ -149,12 +149,22 @@
             <a href="{{ path('app_classes') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_classes' %}active{% endif %}">Classes</a>
             <a href="{{ path('app_contact') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Contact Us</a>
             <a href="{{ path('app_facility') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_facility' %}active{% endif %}"> Planning</a>
-            <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle {% if app.request.get('_route') in ['app_reclamation_new', 'app_reclamation_front_show'] %}active{% endif %}" data-bs-toggle="dropdown">reclamations</a>
-                    <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
-                        <a href="{{ path('app_reclamation_new') }}" class="dropdown-item {% if app.request.get('_route') == 'app_reclamation' %}active{% endif %}">envoyer réclamation</a>
-                        <a href="{{ path('app_my_reclamations') }}" class="dropdown-item {% if app.request.get('_route') == 'app_my_reclamations' %}active{% endif %}">Mes réclamations</a>
-                    </div>
+                      {% set unreadResponsesCount = unreadResponsesCount ?? 0 %}
+
+           <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle {% if app.request.get('_route') in ['app_reclamation_new', 'app_my_reclamations', 'app_reclamation_front_show', 'app_index'] %}active{% endif %}" data-bs-toggle="dropdown">
+                    Réclamations
+                    {% if unreadResponsesCount > 0 %}
+                        <span class="badge bg-danger">{{ unreadResponsesCount }}</span>
+                    {% endif %}
+                </a>
+                <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
+                    <a href="{{ path('app_reclamation_new') }}" class="dropdown-item {% if app.request.get('_route') == 'app_reclamation_new' %}active{% endif %}">Envoyer Réclamation</a>
+                    <a href="{{ path('app_my_reclamations') }}" class="dropdown-item {% if app.request.get('_route') == 'app_my_reclamations' %}active{% endif %}">Mes réclamations {% if unreadResponsesCount > 0 %}
+                        <span class="badge bg-danger">{{ unreadResponsesCount }}</span>
+                    {% endif %}</a>
+                   
+                </div>
             </div>
 
         </div>
