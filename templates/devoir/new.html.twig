@@ -1,0 +1,104 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Nouveau Devoir{% endblock %}
+
+{% block welc %}
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Créer un Nouveau Devoir</h1>
+
+        <div class="card border-0 shadow-lg rounded-4">
+            <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                <h4 class="fw-bold">Formulaire de Devoir</h4>
+            </div>
+            <div class="card-body p-5">
+                {{ include('devoir/_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #4CAF50, #008CBA);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, #4CAF50, #008CBA);
+            color: white;
+            border-radius: 20px;
+            padding: 12px 30px;
+            font-size: 16px;
+        }
+
+        .btn-primary-gradient:hover {
+            background: linear-gradient(135deg, #45A049, #007BB5);
+        }
+
+        .card {
+            border-radius: 15px;
+            animation: fadeInUp 0.8s ease-in-out;
+        }
+
+        .card-header {
+            background-color: #007BB5;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .form-control:focus {
+            border-color: #008CBA;
+            box-shadow: 0 0 10px rgba(0, 140, 186, 0.3);
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 8px 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <script>
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        
+                        // Trigger the modal
+                        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                        errorModal.show();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+{% endblock %}

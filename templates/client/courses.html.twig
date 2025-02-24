@@ -1,0 +1,126 @@
+{% extends 'base_front.html.twig' %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Alamni - Preschool Website{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="{{ asset('Front/img/favicon.ico') }}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
+    
+    {% block css %}
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('lib/animate/animate.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('lib/owlcarousel/assets/owl.carousel.min.css') }}">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {% endblock %}
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+
+        <!-- Navbar Start -->
+        {% block navbar %}
+        <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
+            <a href="" class="navbar-brand">
+                <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav mx-auto">
+                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == '' %}active{% endif %}">Home</a>
+                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == '' %}active{% endif %}">About Us</a>
+                    <a href="{{ path('app_courses') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_courses' %}active{% endif %}">Courses</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle {% if app.request.get('_route') in ['', 'app_team', 'app_cta', 'app_appointment', 'app_404'] %}active{% endif %}" data-bs-toggle="dropdown">Pages</a>
+                        <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
+                            <a href="" class="dropdown-item {% if app.request.get('_route') == '' %}active{% endif %}">School Facilities</a>
+                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_team' %}active{% endif %}">Popular Teachers</a>
+                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_cta' %}active{% endif %}">Become A Teacher</a>
+                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_appointment' %}active{% endif %}">Make Appointment</a>
+                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_404' %}active{% endif %}">404 Error</a>
+                        </div>
+                    </div>
+                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Contact Us</a>
+                </div>
+                <a href="#" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Join Us<i class="fa fa-arrow-right ms-3"></i></a>
+            </div>
+        </nav>
+        {% endblock %}
+        <!-- Navbar End -->
+
+        <!-- Hero/Carousel Start -->
+        {% block content %}{% endblock %}
+        {% block hero %}
+        <div class="container-fluid p-0 mb-5">
+            <div class="owl-carousel header-carousel position-relative">
+                <div class="owl-carousel-item position-relative">
+                    <img class="img-fluid" src="{{ asset('img/carousel-1.jpg') }}" alt="">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(0, 0, 0, .2);">
+                        <div class="container">
+                            <div class="row justify-content-start">
+                                <div class="col-10 col-lg-8">
+                                    <h1 class="display-2 text-white animated slideInDown mb-4">The Best Kindergarten School For Your Child</h1>
+                                    <a href="#" class="btn btn-primary rounded-pill py-sm-3 px-sm-5 me-3 animated slideInLeft">Learn More</a>
+                                    <a href="#" class="btn btn-dark rounded-pill py-sm-3 px-sm-5 animated slideInRight">Our Classes</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+        
+        <!-- Courses Section -->
+       {% block courses %}
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+            <h1 class="mb-3">Our Courses</h1>
+            <p>Discover a variety of educational courses tailored to your needs.</p>
+        </div>
+        <div class="row g-4">
+            {% for course in courses %}
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="card shadow-sm border-0">
+                      <img class="img-fluid" src="{{ asset('uploads/images/' ~ course.image) }}" alt="">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ course.titre }}</h5>
+                        
+                         <p class="card-text">{{ course.matiereC }}</p>
+                        <a href="{{ path('app_course_show', {'id': course.id}) }}" class="btn btn-primary">Learn More</a>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+    </div>
+</body>
+
+</html>

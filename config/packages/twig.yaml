@@ -1,0 +1,9 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+
+    paths:
+        '%kernel.project_dir%/templates': ProjectTemplates
+        '%kernel.project_dir%/templates/frontOffice': frontOffice
+        '%kernel.project_dir%/templates/backOffice': backOffice
+
+

@@ -1,0 +1,117 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Modifier un Cours{% endblock %}
+
+{% block welc %}
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                    <h3 class="fw-bold">
+                        <i class="fas fa-edit"></i> Modifier le Cours
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+                    <table class="table table-borderless">
+                        {% for field in form %}
+                            <tr>
+                                <td class="fw-semibold text-end align-middle" style="width: 30%;">
+                                    {{ form_label(field) }}
+                                    {% if field.vars.required %}
+                                        <span class="text-danger">*</span>
+                                    {% endif %}
+                                </td>
+                                <td style="width: 70%;">
+                                    {{ form_widget(field, {'attr': {
+                                        'class': 'form-control shadow-sm rounded-3',
+                                        'required': field.vars.required
+                                    }}) }}
+                                    {% if not field.vars.valid %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form_errors(field) }}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="d-flex justify-content-between align-items-center mt-4 w-100">
+                        <a href="{{ path('app_cours_index') }}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                            <i class="fas fa-arrow-left"></i> Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary-gradient btn-sm rounded-2 px-3">
+                            <i class="fas fa-check-circle"></i> Modifier
+                        </button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-gradient-primary, .btn-primary-gradient {
+            background: linear-gradient(135deg, #4CAF50, #008CBA);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-gradient:hover, .btn-primary-gradient:focus {
+            background: linear-gradient(135deg, #45A049, #007BB5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            animation: fadeInUp 0.8s ease-in-out;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .form-control {
+            transition: all 0.3s ease-in-out;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: #008CBA;
+            box-shadow: 0 0 0 0.2rem rgba(0, 140, 186, 0.25);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 576px) {
+            .text-end {
+                text-align: left !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+{% endblock %}

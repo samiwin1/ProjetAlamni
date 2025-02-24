@@ -1,0 +1,23 @@
+{% extends 'base_.html.twig' %}
+
+
+{% block welc %}
+    <h1>Détails du cours</h1>
+
+    <table class="table">
+        <tr>
+            <th>ID:</th>
+            <td>{{ cour.id }}</td>
+        </tr>
+        <tr>
+            <th>Nom:</th>
+            <td>{{ cour.titre }}</td>
+        </tr>
+        <tr>
+            <th>Description:</th>
+            <td>{{ cour.descrC }}</td>
+        </tr>
+    </table>
+
+    <a href="{{ path('app_cours_index') }}" class="btn btn-secondary">Retour</a>
+{% endblock %}

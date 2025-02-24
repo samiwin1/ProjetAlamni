@@ -1,0 +1,194 @@
+{% extends 'base_front.html.twig' %}
+
+{% block hero %}{% endblock %}
+{% block about %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block team %}{% endblock %}
+{% block testimonial %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="profile-card">
+        <a href="{{ path('profile_utilisateur') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Retour
+        </a>
+
+        <div class="profile-header">
+            <h2>Modifier mon profil</h2>
+            {% if user.photo %}
+                <img src="{% if user.photo %}data:image/jpeg;base64,{{ user.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}"  alt="Profile" class="profile-image" id="preview-image">
+            {% else %}
+                <img src="{% if user.photo %}data:image/jpeg;base64,{{ user.photo }}{% else %}{{ asset('back/images/avatar-4.jpg') }}{% endif %}"  alt="Default Profile" class="profile-image" id="preview-image">
+            {% endif %}
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'editProfileForm', 'novalidate': 'novalidate'}}) }}
+            <div class="form-group mb-3">
+                {{ form_label(form.photo, 'Photo de profil') }}
+                {{ form_widget(form.photo, {'attr': {'class': 'form-control', 'onchange': 'previewImage(this)'}}) }}
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form_label(form.nom, 'Nom') }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form_label(form.prenom, 'Prénom') }}
+                {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form_label(form.email, 'Email') }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="form-group mb-3">
+                {{ form_label(form.mot_de_passe, 'Nouveau mot de passe (laisser vide pour ne pas changer)') }}
+                {{ form_widget(form.mot_de_passe, {'attr': {'class': 'form-control'}}) }}
+                <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <a href="{{ path('profile_utilisateur') }}" class="btn btn-secondary">Annuler</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<style>
+    .profile-card {
+        max-width: 600px;
+        margin: 30px auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        position: relative;
+    }
+
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 8px 15px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .profile-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin: 20px 0;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .action-buttons {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 10px 25px;
+        margin: 0 5px;
+    }
+</style>
+
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-image').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editProfileForm');
+    
+    // Validation en temps réel
+    form.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function() {
+            validateField(this);
+        });
+    });
+
+    // Validation à la soumission
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        form.querySelectorAll('input').forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    function validateField(input) {
+        const name = input.getAttribute('name');
+        let isValid = true;
+        let errorMessage = '';
+
+        if (name.includes('[email]')) {
+            isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+            errorMessage = 'Email invalide';
+        } else if (name.includes('[nom]') || name.includes('[prenom]')) {
+            isValid = /^[a-zA-ZÀ-ÿ\s-]{2,}$/.test(input.value);
+            errorMessage = 'Doit contenir au moins 2 caractères et uniquement des lettres';
+        } else if (name.includes('[mot_de_passe]')) {
+            if (input.value !== '') {  // Vérifier seulement si un mot de passe est entré
+                isValid = input.value.length >= 8;
+                errorMessage = 'Le mot de passe doit contenir au moins 8 caractères';
+            } else {
+                isValid = true;  // Mot de passe vide est valide en mode édition
+            }
+        }
+
+        const feedback = input.nextElementSibling;
+        if (!isValid && input.value !== '') {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+            if (feedback) feedback.textContent = errorMessage;
+        } else {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            if (feedback) feedback.textContent = '';
+        }
+
+        return isValid;
+    }
+});
+</script>
+{% endblock %}

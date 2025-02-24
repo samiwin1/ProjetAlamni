@@ -1,0 +1,9 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+    {% if devoir.cours is defined and devoir.cours is not null %}
+        <a href="{{ path('app_devoir_by_cours', {'id': devoir.cours.id}) }}" class="btn btn-secondary">Retour à la liste des devoirs du cours</a>
+    {% else %}
+        <a href="{{ path('app_cours_index') }}" class="btn btn-secondary">Retour à la liste des cours</a>
+    {% endif %}
+{{ form_end(form) }}

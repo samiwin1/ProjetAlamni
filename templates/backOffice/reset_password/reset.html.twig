@@ -1,0 +1,17 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Réinitialiser le mot de passe{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1>Réinitialiser le mot de passe</h1>
+    <form method="post" action="">
+        <input type="hidden" name="token" value="{{ token }}">
+        <div class="mb-3">
+            <label for="new_password" class="form-label">Nouveau mot de passe</label>
+            <input type="password" id="new_password" name="new_password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Réinitialiser</button>
+    </form>
+</div>
+{% endblock %}

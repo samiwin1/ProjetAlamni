@@ -1,0 +1,128 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Liste des Cours{% endblock %}
+
+{% block stylesheets %}
+   
+    <style>
+        .table th, .table td {
+            padding: 4px;
+            vertical-align: middle;
+            font-size: 0.8rem;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .btn {
+            width: auto;
+            text-align: center;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+        }
+
+        .course-image {
+            width: 0px; /* Réduit la largeur à 30px */
+            height: 30px; /* Réduit la hauteur à 30px */
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                font-size: 0.6rem;
+                padding: 1px 2px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block welc %}
+    <div class="container-fluid mt-2">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                <h4 class="fw-bold mb-0"><i class="fas fa-book"></i> Liste des Cours</h4>
+                <a href="{{ path('app_cours_new') }}" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus-circle"></i> Ajouter
+                </a>
+            </div>
+            <div class="card-body p-2">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} alert-dismissible fade show py-1 px-2" role="alert">
+                            <small>{{ message }}</small>
+                            <button type="button" class="btn-close p-1" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% if cours is empty %}
+                    <div class="alert alert-warning text-center py-1 px-2"><small>Aucun cours trouvé.</small></div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle text-center table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Img</th>
+                                    <th>Titre</th>
+                                    <th>Description</th>
+                                    <th>Matière</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for cour in cours %}
+                                <tr>
+                                    <td>{{ cour.id }}</td>
+                                    <td>
+                                        {% if cour.image %}
+                                            <img src="{{ asset('uploads/images/' ~ cour.image) }}" alt="" class="course-image" title="{{ cour.titre }}">
+                                        {% else %}
+                                            <i class="fas fa-image text-muted"  style="font-size: 0.8rem;"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td class="fw-semibold">{{ cour.titre|length > 15 ? cour.titre|slice(0, 15) ~ '...' : cour.titre }}</td>
+                                    <td>{{ cour.descrC|length > 20 ? cour.descrC|slice(0, 20) ~ '...' : cour.descrC }}</td>
+                                    <td>{{ cour.matiereC|length > 10 ? cour.matiereC|slice(0, 10) ~ '...' : cour.matiereC }}</td>
+                                    <td>{{ cour.dateC ? cour.dateC|date('d/m/y') : '-' }}</td>
+                                    <td class="actions-cell">
+                                        <div class="btn-group">
+                                            <a href="{{ path('app_devoir_by_cours', {'id': cour.id}) }}" class="btn btn-info btn-sm" title="Devoirs">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_cours_edit', {'id': cour.id}) }}" class="btn btn-warning btn-sm" title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form method="post" action="{{ path('app_cours_delete', {'id': cour.id}) }}" onsubmit="return confirm('Supprimer ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cour.id) }}">
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

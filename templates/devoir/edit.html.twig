@@ -1,0 +1,114 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Modifier Devoir{% endblock %}
+
+{% block welc %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top">
+                        <h1 class="h3 fw-bold mb-0">
+                            <i class="fas fa-edit" aria-hidden="true"></i> Modifier le Devoir
+                        </h1>
+                    </div>
+                    <div class="card-body p-4">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            {% for field in form %}
+                                <div class="mb-3 row">
+                                    <label for="{{ field.vars.id }}" class="col-sm-4 col-form-label fw-semibold text-sm-end">{{ field.vars.label }}</label>
+                                    <div class="col-sm-8">
+                                        {% if field.vars.name == 'comment' %}
+                                            {{ form_widget(field, {'attr': {'class': 'form-control shadow-sm rounded-3'}}) }}
+                                        {% else %}
+                                            {{ form_widget(field, {'attr': {'class': 'form-control shadow-sm rounded-3', 'required': true}}) }}
+                                        {% endif %}
+                                        {% if not field.vars.valid %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form_errors(field) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                            <div class="d-flex justify-content-between align-items-center mt-4">
+                                <a href="{{ path('app_devoir_by_cours', {'id': devoir.cours.id}) }}" class="btn btn-outline-secondary rounded-pill px-3">
+                                    <i class="fas fa-arrow-left" aria-hidden="true"></i> Retour
+                                </a>
+                                <button type="submit" class="btn btn-primary-gradient rounded-pill px-4">
+                                    <i class="fas fa-save" aria-hidden="true"></i> Mettre à jour
+                                </button>
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-gradient-primary, .btn-primary-gradient {
+            background: linear-gradient(135deg, #4CAF50, #008CBA);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-gradient:hover, .btn-primary-gradient:focus {
+            background: linear-gradient(135deg, #45A049, #007BB5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            animation: fadeInUp 0.8s ease-in-out;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .form-control {
+            transition: all 0.3s ease-in-out;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: #008CBA;
+            box-shadow: 0 0 0 0.2rem rgba(0, 140, 186, 0.25);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 576px) {
+            .col-form-label.text-sm-end {
+                text-align: left !important;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (function () {
+            'use strict';
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
+{% endblock %}
