@@ -1,0 +1,171 @@
+{% extends 'base_back.html.twig' %}
+
+{% block welc %}
+<style>
+.niveau-etudes-wrapper, .nom-niveau-wrapper {
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+} 
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.img-thumbnail {
+    padding: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    max-width: 100%;
+    height: auto;
+}
+</style>
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Modifier l'utilisateur</h5>
+                </div>
+                <div class="card-block">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="form-group">
+                            {{ form_label(form.nom, 'Nom') }}
+                            {{ form_widget(form.nom, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'required': 'required'
+                                }
+                            }) }}
+                            {{ form_errors(form.nom) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.prenom, 'Prénom') }}
+                            {{ form_widget(form.prenom, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'required': 'required'
+                                }
+                            }) }}
+                            {{ form_errors(form.prenom) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.email, 'Email') }}
+                            {{ form_widget(form.email, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'required': 'required',
+                                    'type': 'email'
+                                }
+                            }) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.mot_de_passe, 'Mot de passe') }}
+                            {{ form_widget(form.mot_de_passe, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'autocomplete': 'new-password'
+                                }
+                            }) }}
+                            <small class="form-text text-muted">Laissez vide pour conserver le mot de passe actuel</small>
+                            {{ form_errors(form.mot_de_passe) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.photo, 'Photo') }}
+                            {{ form_widget(form.photo, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'accept': 'image/*'
+                                }
+                            }) }}
+                            {{ form_errors(form.photo) }}
+                        </div>
+
+                        {% if userToModify.photo is defined and userToModify.photo %}
+                            <div class="form-group">
+                                <label>Photo actuelle</label>
+                                <div>
+                                    <img src="data:image/jpeg;base64,{{ userToModify.photo }}" 
+                                         alt="Photo actuelle" 
+                                         class="img-thumbnail" 
+                                         style="max-width: 200px">
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer les modifications
+                            </button>
+                            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation du formulaire
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+
+    // Prévisualisation de l'image
+    const photoInput = document.querySelector('input[type="file"]');
+    if (photoInput) {
+        photoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('img');
+                    preview.src = e.target.result;
+                    preview.classList.add('img-thumbnail', 'mt-2');
+                    preview.style.maxWidth = '200px';
+                    
+                    const existingPreview = photoInput.parentElement.querySelector('.preview-image');
+                    if (existingPreview) {
+                        existingPreview.remove();
+                    }
+                    
+                    preview.classList.add('preview-image');
+                    photoInput.parentElement.appendChild(preview);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

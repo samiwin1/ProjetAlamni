@@ -1,0 +1,301 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block team %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+   
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
+        <a href="{{ path('app_home') }}" class="navbar-brand">
+            <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
+        </a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav mx-auto">
+                <a href="{{ path('app_home') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_home' %}active{% endif %}">Home</a>
+                <a href="{{ path('app_about') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_about' %}active{% endif %}">About Us</a>
+                <a href="{{ path('app_classes') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_classes' %}active{% endif %}">Classes</a>
+                <a href="{{ path('app_contact') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Contact Us</a>
+            </div>
+            <a href="login" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Join Us<i class="fa fa-arrow-right ms-3"></i></a>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <!-- Page Header -->
+    <div class="container-xxl py-5 page-header position-relative text-center">
+        <div class="container py-5">
+            <h1 class="display-2 text-white animated slideInDown mb-4">Connexion</h1>
+        </div>
+        <div class="wave-bottom"></div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="container d-flex align-items-center justify-content-center min-vh-80">
+        <div class="login-card p-5 shadow-lg rounded-4 bg-white">
+            <div class="text-center">
+                <h3 class="title text-primary fw-bold">Se Connecter</h3>
+                <p class="text-muted">Veuillez entrer vos identifiants</p>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <!-- Login Form -->
+            <form method="post" action="{{ path('app_login') }}" id="loginForm">
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary">Email</label>
+        <input type="email" 
+               value="{{ last_username }}" 
+               name="email" 
+               class="form-control p-3 rounded-3" 
+               placeholder="Votre email" 
+               required 
+               autofocus>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label fw-semibold text-secondary">Mot de passe</label>
+        <input type="password" 
+               name="password" 
+               class="form-control p-3 rounded-3" 
+               placeholder="Votre mot de passe" 
+               required>
+    </div>
+    <div class="mb-3 text-end">
+        <a href="{{ path('app_forgot_password_request') }}" class="text-decoration-none">Mot de passe oublié ?</a>
+    </div>
+    
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+    <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 mt-3">
+        <i class="fas fa-sign-in-alt"></i> Se connecter
+    </button>
+      <a href="{{ path('app_signin') }}" class="btn btn-outline-secondary w-100 py-2 rounded-3 mt-2">
+                    <i class="fas fa-user-plus"></i> S'inscrire
+                </a>
+</form>
+
+            <div class="text-center text-muted mt-4">
+                <small>Merci d'utiliser notre plateforme.</small>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .min-vh-80 {
+            min-height: 80vh;
+        }
+
+        .login-card {
+            width: 420px;
+            text-align: center;
+            border: 2px solid #FEECE2;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #FEC89A;
+            color: #333;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #FF6B6B;
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control.is-valid {
+            border-color: #198754;
+        }
+
+        .btn-primary {
+            background: #FF6B6B;
+            border: none;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background: #EE5253;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-secondary {
+            border: 1px solid #FF6B6B;
+            color: #FF6B6B;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #FF6B6B;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                width: 90%;
+                padding: 20px;
+            }
+            .form-control, .btn {
+                font-size: 14px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const emailInput = document.querySelector('input[name="_username"]');
+            const passwordInput = document.querySelector('input[name="_password"]');
+            const alertContainer = document.getElementById('alertContainer');
+
+            function showError(input, message) {
+                const errorDiv = input.nextElementSibling;
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+
+            function showSuccess(input) {
+                const errorDiv = input.nextElementSibling;
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+                errorDiv.style.display = 'none';
+            }
+
+            function validateEmail(email) {
+                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email) {
+                    return "L'email est requis";
+                }
+                if (!regex.test(email)) {
+                    return "Format d'email invalide";
+                }
+                return "";
+            }
+
+            function validatePassword(password) {
+                if (!password) {
+                    return "Le mot de passe est requis";
+                }
+                if (password.length < 8) {
+                    return "Le mot de passe doit contenir au moins 8 caractères";
+                }
+                return "";
+            }
+
+            // Validation en temps réel
+            emailInput.addEventListener('input', function() {
+                const error = validateEmail(this.value);
+                if (error) {
+                    showError(this, error);
+                } else {
+                    showSuccess(this);
+                }
+            });
+
+            passwordInput.addEventListener('input', function() {
+                const error = validatePassword(this.value);
+                if (error) {
+                    showError(this, error);
+                } else {
+                    showSuccess(this);
+                }
+            });
+
+            // Validation à la soumission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let isValid = true;
+
+                const emailError = validateEmail(emailInput.value);
+                if (emailError) {
+                    showError(emailInput, emailError);
+                    isValid = false;
+                }
+
+                const passwordError = validatePassword(passwordInput.value);
+                if (passwordError) {
+                    showError(passwordInput, passwordError);
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    this.submit();
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Events Management{% endblock %}
+
+{% block welc %}
+<div class="card animate-fade">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Events Management</h2>
+        <div class="d-flex gap-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search events...">
+            <a href="{{ path('app_event_new') }}" class="btn btn-success">
+                <i class="fas fa-plus"></i>
+                <span>Add New Event</span>
+            </a>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        {% if events is empty %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                No events found. Create your first event!
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Event Name</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Location</th>
+                            <th>Image</th>
+                            <th>Favorites</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventTableBody">
+                        {% for event in events %}
+                            <tr class="animate-fade" style="animation-delay: {{ loop.index * 0.1 }}s">
+                                <td>{{ event.id }}</td>
+                                <td class="searchable">{{ event.nom }}</td>
+                                <td class="searchable">{{ event.description|length > 50 ? event.description|slice(0, 50) ~ '...' : event.description }}</td>
+                                <td>{{ event.date ? event.date|date('M d, Y') : '' }}</td>
+                                <td>{{ event.heureDebut ? event.heureDebut|date('H:i') : '' }}</td>
+                                <td>{{ event.heureFin ? event.heureFin|date('H:i') : '' }}</td>
+                                <td>{{ event.lieu }}</td>
+                                <td class="event-image-cell">
+                                {% if event.image %}
+                                    <div class="image-placeholder">
+                                        <img src="{{ asset(event.image) }}" alt="Image de l'événement" class="event-image-cell">
+                                    </div>
+                                {% else %}
+                                    <div class="no-image-placeholder">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('event_favorite', {'id': event.id}) }}">
+                                        {% if app.user and event.favorites|filter(f => f.user == app.user)|length > 0 %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    </a>
+                                    <span>{{ event.favorites|length }}</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-primary btn-sm" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-warning btn-sm" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="{{ path('app_event_delete', {'id': event.id}) }}" 
+                                              onsubmit="return confirm('Are you sure you want to delete this event?');"
+                                              style="display: inline-block;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const eventRows = document.querySelectorAll('#eventTableBody tr');
+
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+
+        eventRows.forEach(row => {
+            const searchableFields = row.querySelectorAll('.searchable');
+            let found = false;
+
+            searchableFields.forEach(field => {
+                const text = field.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    found = true;
+                }
+            });
+
+            if (found) {
+                row.style.display = '';
+                // Highlight the found terms
+                searchableFields.forEach(field => {
+                    const text = field.textContent;
+                    if (searchTerm !== '') {
+                        const regex = new RegExp(searchTerm, 'gi');
+                        field.innerHTML = text.replace(regex, match => `<mark>${match}</mark>`);
+                    } else {
+                        field.innerHTML = text;
+                    }
+                });
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Event listener for real-time search
+    searchInput.addEventListener('input', filterTable);
+});
+</script>
+{% endblock %}

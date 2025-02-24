@@ -1,0 +1,93 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %} Notifications {% endblock %}
+
+{% block content %}
+    <div class="page-header card">
+        <div class="row align-items-end">
+            <div class="col-lg-8">
+                <div class="page-header-title">
+                    <i class="icofont icofont-listine-dots bg-c-pink"></i>
+                    <div class="d-inline">
+                        <h4>Notification</h4>
+                        <span>Manage and view notifications here</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="page-header-breadcrumb">
+                    <ul class="breadcrumb-title">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('dashboard') }}">
+                                <i class="icofont icofont-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item"><a href="#">Components</a></li>
+                        <li class="breadcrumb-item"><a href="#">Notifications</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Body Start -->
+    <div class="page-body button-page">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Notifications</h5>
+                        <div class="card-header-right">
+                            <i class="icofont icofont-spinner-alt-5"></i>                                                        
+                        </div>
+                    </div>
+                    <div class="card-block">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="sub-title">Notification Positions</div>
+                                <p>Select where to display notifications on the screen.</p>
+                                <div class="location-selector">
+                                    <div class="bit top left" data-position="top left"></div>
+                                    <div class="bit top right" data-position="top right"></div>
+                                    <div class="bit top" data-position="top"></div>
+                                    <div class="bit bottom left" data-position="bottom left"></div>
+                                    <div class="bit bottom right" data-position="bottom right"></div>
+                                    <div class="bit bottom" data-position="bottom"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-12">
+                                <div class="sub-title">Notification Alerts</div>
+                                <p>Click the buttons below to test different notification styles.</p>
+                                <ul class="notifications">
+                                    <li>
+                                        <button class="btn btn-primary" data-type="inverse" data-from="top" data-align="left">
+                                            Top Left
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="btn btn-primary" data-type="inverse" data-from="top" data-align="right">
+                                            Top Right
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="btn btn-primary" data-type="inverse" data-from="bottom" data-align="center">
+                                            Bottom Center
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/js/bootstrap-growl.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/pages/notification/notification.js') }}"></script>
+{% endblock %}

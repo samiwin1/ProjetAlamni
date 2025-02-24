@@ -1,0 +1,84 @@
+{% extends 'base_back.html.twig' %}
+
+{% block welc %}
+<div class="card p-4 shadow animate-fade">
+    <div class="card-header bg-gradient-primary text-white">
+        <h2 class="text-center">Détails de la Catégorie</h2>
+    </div>
+
+    <div class="card-body">
+        {% if category is not defined or category is empty %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                La catégorie demandée n'existe pas.
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-md-8">
+                    <table class="table details-table">
+                        <tbody>
+                            <tr>
+                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <td>{{ category.id }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-tag me-2"></i>Nom</th>
+                                <td>{{ category.nom|default('Non spécifié') }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-align-left me-2"></i>Description</th>
+                                <td>{{ category.description|default('Aucune description') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="action-buttons mt-4 text-center">
+                <a href="{{ path('app_category_index') }}" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+                <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn btn-primary-gradient me-2">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                {{ include('category/_delete_form.html.twig') }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block style %}
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4CAF50, #008CBA);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .details-table th {
+        width: 30%;
+        background-color: #f8f9fa;
+        vertical-align: middle;
+    }
+
+    .details-table td {
+        vertical-align: middle;
+    }
+
+    .action-buttons .btn {
+        min-width: 120px;
+    }
+
+    .btn-primary-gradient {
+        background: linear-gradient(135deg, #4CAF50, #008CBA);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary-gradient:hover {
+        background: linear-gradient(135deg, #45A049, #007BB5);
+    }
+</style>
+{% endblock %}
+{% endblock %}

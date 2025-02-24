@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Alamni - Plateforme éducative{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="{{ asset('Front/img/favicon.ico') }}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
+    
+    {% block css %}
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('lib/animate/animate.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('lib/owlcarousel/assets/owl.carousel.min.css') }}">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {% endblock %}
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        {% block navbar %}
+        <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
+            <a href="" class="navbar-brand">
+                <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav mx-auto">
+                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == 'app_home' %}active{% endif %}">Accueil</a>
+                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == 'app_about' %}active{% endif %}">À propos</a>
+                    <a href="{{ path('app_event') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_event' %}active{% endif %}">Événements</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
+                            <a href="" class="dropdown-item">Nos installations</a>
+                            <a href="" class="dropdown-item">Nos enseignants</a>
+                            <a href="" class="dropdown-item">Prendre rendez-vous</a>
+                        </div>
+                    </div>
+                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Contact</a>
+                </div>
+                <a href="" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">joins<i class="fa fa-arrow-right ms-3"></i></a>
+            </div>
+        </nav>
+        {% endblock %}
+
+        {% block hero %}
+        <div class="container-fluid p-0 mb-5">
+            <div class="owl-carousel header-carousel position-relative">
+                <div class="owl-carousel-item position-relative">
+                    <img class="img-fluid" src="{{ asset('img/carousel-1.jpg') }}" alt="Image carousel principale">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(0, 0, 0, .2);">
+                        <div class="container">
+                            <div class="row justify-content-start">
+                                <div class="col-10 col-lg-8">
+                                    <h1 class="display-2 text-white animated slideInDown mb-4">La meilleure école pour votre enfant</h1>
+                                    <a href="#" class="btn btn-primary rounded-pill py-sm-3 px-sm-5 me-3 animated slideInLeft">En savoir plus</a>
+                                    <a href="#" class="btn btn-dark rounded-pill py-sm-3 px-sm-5 animated slideInRight">Nos cours</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+        
+        {% block events %}
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                    <h1 class="mb-3">Nos événements</h1>
+                    <p>Découvrez une variété d'événements éducatifs adaptés à vos besoins.</p>
+                </div>
+                <div class="row g-4">
+                    {% if events is empty %}
+                        <div class="col-12 text-center">
+                            <p>Aucun événement n'est disponible pour le moment.</p>
+                        </div>
+                    {% else %}
+                        {% for event in events %}
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="{{ asset(event.image) }}" alt="{{ event.nom }}">
+                                </div>
+                                <div class="card-body text-center p-4">
+                                    <h5 class="card-title mb-3">{{ event.nom }}</h5>
+                                    <p class="card-text mb-3">{{ event.description|length > 100 ? event.description|slice(0, 100) ~ '...' : event.description }}</p>
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <div class="text-start">
+                                            <p class="mb-2"><i class="far fa-calendar-alt text-primary me-2"></i>{{ event.date|date('d/m/Y') }}</p>
+                                            <p class="mb-2"><i class="far fa-clock text-primary me-2"></i>{{ event.heureDebut|date('H:i') }} - {{ event.heureFin|date('H:i') }}</p>
+                                            <p class="mb-0"><i class="fas fa-map-marker-alt text-primary me-2"></i>{{ event.lieu }}</p>
+                                        </div>
+                                    </div>
+                                    <a href="{{ path('event_details', {'id': event.id}) }}" class="btn btn-primary">More</a>
+                                    <button class="btn btn-outline-secondary favorite-btn" data-event-id="{{ event.id }}">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <div class="mt-2">
+                                        <i class="fas fa-user"></i> {{ event.favorites|length }} favorites
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('lib/wow/wow.min.js') }}"></script>
+    <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
+    
+    <!-- Template Javascript -->
+    <script src="{{ asset('js/main.js') }}"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const favoriteButtons = document.querySelectorAll('.favorite-btn');
+
+        favoriteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const eventId = this.getAttribute('data-event-id');
+                fetch(`/event/${eventId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token('favorite') }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        location.reload();
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                });
+            });
+        });
+    });
+    </script>
+</body>
+
+</html>

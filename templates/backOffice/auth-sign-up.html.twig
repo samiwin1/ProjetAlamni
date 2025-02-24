@@ -1,0 +1,408 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block team %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+   
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
+        <a href="{{ path('app_home') }}" class="navbar-brand">
+            <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
+        </a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav mx-auto">
+                <a href="{{ path('app_home') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_home' %}active{% endif %}">Home</a>
+                <a href="{{ path('app_about') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_about' %}active{% endif %}">About Us</a>
+                <a href="{{ path('app_classes') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_classes' %}active{% endif %}">Classes</a>
+                <a href="{{ path('app_contact') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Contact Us</a>
+            </div>
+            <a href="login" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Join Us<i class="fa fa-arrow-right ms-3"></i></a>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control.is-valid {
+            border-color: #198754;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .password-strength {
+            height: 5px;
+            background-color: #e9ecef;
+            margin-top: 5px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s ease;
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 10px auto;
+            border-radius: 8px;
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-xxl py-5 page-header position-relative text-center">
+        <div class="container py-5">
+            <h1 class="display-2 text-white animated slideInDown mb-4">Créer un compte</h1>
+        </div>
+        <div class="wave-bottom"></div>
+    </div>
+
+    <section class="login">
+        <div class="container d-flex align-items-center justify-content-center min-vh-80">
+            <div class="login-card p-5 shadow-lg rounded-4 bg-white">
+                <div class="text-center">
+                    <h3 class="text-center mb-4">Créer un compte</h3>
+
+                    {{ form_start(form, {'attr': {'id': 'signupForm', 'novalidate': 'novalidate'}}) }}
+
+                    {# Photo #}
+                    <div class="form-group text-center mb-4">
+                        <div id="imagePreview" style="display: none;">
+                            <img src="" alt="Aperçu" class="preview-image">
+                        </div>
+                        <div class="custom-file">
+                            {{ form_widget(form.photo, {
+                                'attr': {
+                                    'class': 'custom-file-input',
+                                    'id': 'photoInput',
+                                    'accept': 'image/*'
+                                }
+                            }) }}
+                            <label class="custom-file-label" for="photoInput">Choisir une photo</label>
+                        </div>
+                        <div class="error-message"></div>
+                    </div>
+
+                    {# Nom #}
+                    <div class="form-group mb-3">
+                        {{ form_widget(form.nom, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Votre nom'
+                            }
+                        }) }}
+                        <div class="error-message"></div>
+                    </div>
+
+                    {# Prénom #}
+                    <div class="form-group mb-3">
+                        {{ form_widget(form.prenom, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Votre prénom'
+                            }
+                        }) }}
+                        <div class="error-message"></div>
+                    </div>
+
+                    {# Email #}
+                    <div class="form-group mb-3">
+                        {{ form_widget(form.email, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Votre email'
+                            }
+                        }) }}
+                        <div class="error-message"></div>
+                    </div>
+
+                    {# Mot de passe #}
+                    <div class="form-group mb-3">
+                        {{ form_widget(form.mot_de_passe, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Mot de passe (8 caractères minimum)'
+                            }
+                        }) }}
+                        <div class="password-strength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                        <div class="error-message"></div>
+                    </div>
+
+                    {# Role #}
+{% if form.role is defined %}
+    <div class="form-group mb-3">
+        {{ form_label(form.role) }}
+        {{ form_widget(form.role, {
+            'attr': {
+                'class': 'form-control'
+            }
+        }) }}
+        <div class="error-message"></div>
+    </div>
+{% endif %}
+
+                    {# Niveau #}
+                    <div class="form-group mb-3" id="niveauGroup">
+                        {{ form_widget(form.niveau, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Sélectionnez votre niveau'
+                            }
+                        }) }}
+                        <div class="error-message"></div>
+                    </div>
+
+                    {# Nom du niveau #}
+                    <div class="form-group mb-3" id="nomNiveauGroup">
+                        {{ form_widget(form.nom_niveau, {
+                            'attr': {
+                                'class': 'form-control',
+                                'placeholder': 'Précisez votre niveau'
+                            }
+                        }) }}
+                        <div class="error-message"></div>
+                    </div>
+
+                   {# Conditions d'utilisation #}
+<div class="form-group mb-4">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="terms" name="terms" required>
+        <label class="custom-control-label" for="terms">
+            J'accepte les <a href="{{ path('conditions_utilisation') }}" id="termsLink">conditions d'utilisation</a>
+        </label>
+        <div class="error-message"></div>
+    </div>
+</div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Créer Mon Compte</button>
+
+                    <div class="text-center mt-4">
+                        <p>Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sélection des éléments
+            const form = document.getElementById('signupForm');
+            const photoInput = document.getElementById('photoInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImage = imagePreview.querySelector('img');
+            const fileLabel = document.querySelector('.custom-file-label');
+            const roleSelect = document.querySelector('select[name="user[role]"]');
+            const niveauSelect = document.querySelector('select[name="user[niveau]"]');
+            const nomNiveauInput = document.querySelector('input[name="user[nom_niveau]"]');
+            const niveauGroup = niveauSelect.closest('.form-group');
+            const nomNiveauGroup = nomNiveauInput.closest('.form-group');
+
+            // Fonction pour gérer l'affichage des champs de niveau
+            function toggleNiveauFields() {
+                const isEleve = roleSelect.value === 'ROLE_ELEVE';
+                
+                // Afficher/masquer les champs
+                niveauGroup.style.display = isEleve ? 'block' : 'none';
+                nomNiveauGroup.style.display = isEleve ? 'block' : 'none';
+
+                // Réinitialiser les valeurs si ce n'est pas un élève
+                if (!isEleve) {
+                    niveauSelect.value = '';
+                    nomNiveauInput.value = '';
+                }
+            }
+
+            // Écouter les changements sur le select du rôle
+            if (roleSelect) {
+                roleSelect.addEventListener('change', toggleNiveauFields);
+            }
+
+            // Votre code existant pour la validation des autres champs
+            function showError(input, message) {
+                const formGroup = input.closest('.form-group');
+                let errorDiv = formGroup.querySelector('.error-message');
+                
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.className = 'error-message text-danger mt-2';
+                    formGroup.appendChild(errorDiv);
+                }
+                
+                errorDiv.textContent = message;
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            }
+
+            function showSuccess(input) {
+                const formGroup = input.closest('.form-group');
+                const errorDiv = formGroup.querySelector('.error-message');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            }
+
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            function validatePassword(password) {
+                return password.length >= 8;  // Uniquement la vérification de la longueur
+}
+
+            function validateName(name) {
+                return name.length >= 2 && /^[a-zA-ZÀ-ÿ\s-]+$/.test(name);
+            }
+
+            // Validation en temps réel
+            const emailInput = form.querySelector('input[name="user[email]"]');
+            const passwordInput = form.querySelector('input[name="user[mot_de_passe]"]');
+            const nomInput = form.querySelector('input[name="user[nom]"]');
+            const prenomInput = form.querySelector('input[name="user[prenom]"]');
+
+            emailInput.addEventListener('input', function() {
+                if (!this.value) {
+                    showError(this, 'L\'email est requis');
+                } else if (!validateEmail(this.value)) {
+                    showError(this, 'Format d\'email invalide');
+                } else {
+                    showSuccess(this);
+                }
+            });
+
+            passwordInput.addEventListener('input', function() {
+                if (!this.value) {
+                    showError(this, 'Le mot de passe est requis');
+                } else if (!validatePassword(this.value)) {
+                    showError(this, 'Le mot de passe doit longeur 8 et au mois un caratere');
+                } else {
+                    showSuccess(this);
+                }
+            });
+
+            nomInput.addEventListener('input', function() {
+                if (!this.value) {
+                    showError(this, 'Le nom est requis');
+                } else if (!validateName(this.value)) {
+                    showError(this, 'Le nom doit contenir au moins 2 caractères et uniquement des lettres');
+                } else {
+                    showSuccess(this);
+                }
+            });
+
+            prenomInput.addEventListener('input', function() {
+                if (!this.value) {
+                    showError(this, 'Le prénom est requis');
+                } else if (!validateName(this.value)) {
+                    showError(this, 'Le prénom doit contenir au moins 2 caractères et uniquement des lettres');
+                } else {
+                    showSuccess(this);
+                }
+            });
+
+            // Gestion de la photo
+            if (photoInput) {
+                photoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            imagePreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                        fileLabel.textContent = file.name;
+                    } else {
+                        imagePreview.style.display = 'none';
+                        fileLabel.textContent = 'Choisir une photo';
+                    }
+                });
+            }
+
+            // Validation à la soumission du formulaire
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    let isValid = true;
+
+                    // Validation des champs obligatoires
+                    if (!validateEmail(emailInput.value)) {
+                        showError(emailInput, 'Email invalide');
+                        isValid = false;
+                    }
+
+                    if (!validatePassword(passwordInput.value)) {
+                        showError(passwordInput, 'Mot de passe invalide');
+                        isValid = false;
+                    }
+
+                    if (!validateName(nomInput.value)) {
+                        showError(nomInput, 'Nom invalide');
+                        isValid = false;
+                    }
+
+                    if (!validateName(prenomInput.value)) {
+                        showError(prenomInput, 'Prénom invalide');
+                        isValid = false;
+                    }
+
+                    // Validation des conditions d'utilisation
+                    const terms = document.getElementById('terms');
+                    if (terms && !terms.checked) {
+                        e.preventDefault();
+                        alert('Veuillez accepter les conditions d\'utilisation');
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        e.preventDefault();
+                    }
+                });
+            }
+            
+
+            // Initialisation
+            toggleNiveauFields();
+        });
+
+
+       
+        
+    </script>
+{% endblock %}

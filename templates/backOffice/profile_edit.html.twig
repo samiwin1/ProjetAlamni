@@ -1,0 +1,316 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block welc %}
+<style>
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.img-thumbnail {
+    padding: 0.25rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    max-width: 100%;
+    height: auto;
+}
+</style>
+
+<div class="page-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-edit me-2"></i>Modifier mon profil</h5>
+                </div>
+                <div class="card-block">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    {{ form_start(form, {'attr': {'id': 'editProfileForm', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(form.nom, 'Nom') }}
+                                    {{ form_widget(form.nom, {
+                                        'attr': {
+                                            'class': 'form-control',
+                                            'required': 'required'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.nom) }}
+                                    <div class="error-message"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(form.prenom, 'Prénom') }}
+                                    {{ form_widget(form.prenom, {
+                                        'attr': {
+                                            'class': 'form-control',
+                                            'required': 'required'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.prenom) }}
+                                    <div class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.email, 'Email') }}
+                            {{ form_widget(form.email, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'required': 'required',
+                                    'type': 'email'
+                                }
+                            }) }}
+                            {{ form_errors(form.email) }}
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.mot_de_passe, 'Mot de passe') }}
+                            {{ form_widget(form.mot_de_passe, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'autocomplete': 'new-password'
+                                }
+                            }) }}
+                            <small class="form-text text-muted">Laissez vide pour conserver le mot de passe actuel</small>
+                            {{ form_errors(form.mot_de_passe) }}
+                            <div class="password-strength">
+                                <div class="password-strength-bar"></div>
+                            </div>
+                            <div class="error-message"></div>
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.photo, 'Photo') }}
+                            {{ form_widget(form.photo, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'accept': 'image/*'
+                                }
+                            }) }}
+                            {{ form_errors(form.photo) }}
+                            <div class="error-message"></div>
+                        </div>
+
+                        {% if user.photo %}
+                            <div class="form-group">
+                                <label>Photo actuelle</label>
+                                <div>
+                                    <img src="data:image/jpeg;base64,{{ user.photo }}" 
+                                         alt="Photo de profil" 
+                                         class="img-thumbnail" 
+                                         style="max-width: 200px">
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                            <a href="{{ path('user_profile') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                        </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editProfileForm');
+    const inputs = {
+        nom: form.querySelector('input[name="user[nom]"]'),
+        prenom: form.querySelector('input[name="user[prenom]"]'),
+        email: form.querySelector('input[name="user[email]"]'),
+        password: form.querySelector('input[name="user[mot_de_passe]"]'),
+        photo: form.querySelector('input[type="file"]')
+    };
+
+    function showError(input, message) {
+        const formGroup = input.closest('.form-group');
+        const errorDiv = formGroup.querySelector('.error-message');
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+        errorDiv.textContent = message;
+        errorDiv.classList.add('show');
+    }
+
+    function showSuccess(input) {
+        const formGroup = input.closest('.form-group');
+        const errorDiv = formGroup.querySelector('.error-message');
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        errorDiv.classList.remove('show');
+    }
+
+    function validateName(value) {
+        return /^[a-zA-ZÀ-ÿ\s-]{2,50}$/.test(value);
+    }
+
+    function validateEmail(value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function validatePassword(value) {
+        return value === '' || value.length >= 8;
+    }
+
+    function updatePasswordStrength(password) {
+        const strengthBar = document.querySelector('.password-strength-bar');
+        let strength = 0;
+
+        if (password.length >= 8) strength += 25;
+        if (password.match(/[a-z]/)) strength += 15;
+        if (password.match(/[A-Z]/)) strength += 20;
+        if (password.match(/[0-9]/)) strength += 20;
+        if (password.match(/[^a-zA-Z0-9]/)) strength += 20;
+
+        strengthBar.className = 'password-strength-bar';
+        if (strength > 80) strengthBar.classList.add('strength-strong');
+        else if (strength > 50) strengthBar.classList.add('strength-medium');
+        else if (strength > 0) strengthBar.classList.add('strength-weak');
+    }
+
+    // Validation en temps réel
+    inputs.nom.addEventListener('input', function() {
+        if (!this.value) {
+            showError(this, 'Le nom est requis');
+        } else if (!validateName(this.value)) {
+            showError(this, 'Le nom doit contenir entre 2 et 50 caractères et uniquement des lettres');
+        } else {
+            showSuccess(this);
+        }
+    });
+
+    inputs.prenom.addEventListener('input', function() {
+        if (!this.value) {
+            showError(this, 'Le prénom est requis');
+        } else if (!validateName(this.value)) {
+            showError(this, 'Le prénom doit contenir entre 2 et 50 caractères et uniquement des lettres');
+        } else {
+            showSuccess(this);
+        }
+    });
+
+    inputs.email.addEventListener('input', function() {
+        if (!this.value) {
+            showError(this, 'L\'email est requis');
+        } else if (!validateEmail(this.value)) {
+            showError(this, 'Format d\'email invalide');
+        } else {
+            showSuccess(this);
+        }
+    });
+
+    inputs.password.addEventListener('input', function() {
+        updatePasswordStrength(this.value);
+        if (this.value && !validatePassword(this.value)) {
+            showError(this, 'Le mot de passe doit contenir au moins 8 caractères');
+        } else {
+            showSuccess(this);
+        }
+    });
+
+    inputs.photo.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
+                showError(this, 'Format d\'image non valide. Utilisez JPG, PNG ou GIF');
+                this.value = '';
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showError(this, 'L\'image ne doit pas dépasser 5 Mo');
+                this.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let preview = document.querySelector('.photo-preview');
+                if (!preview) {
+                    preview = document.createElement('img');
+                    preview.classList.add('photo-preview', 'mb-3');
+                    document.querySelector('.photo-preview-container').appendChild(preview);
+                }
+                preview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+            showSuccess(this);
+        }
+    });
+
+    // Validation à la soumission
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+
+        if (!validateName(inputs.nom.value)) {
+            showError(inputs.nom, 'Nom invalide');
+            isValid = false;
+        }
+
+        if (!validateName(inputs.prenom.value)) {
+            showError(inputs.prenom, 'Prénom invalide');
+            isValid = false;
+        }
+
+        if (!validateEmail(inputs.email.value)) {
+            showError(inputs.email, 'Email invalide');
+            isValid = false;
+        }
+
+        if (inputs.password.value && !validatePassword(inputs.password.value)) {
+            showError(inputs.password, 'Mot de passe invalide');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            const firstError = form.querySelector('.is-invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

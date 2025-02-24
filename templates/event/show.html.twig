@@ -1,0 +1,125 @@
+{% extends 'base_back.html.twig' %}
+
+{% block welc %}
+<div class="card p-4 shadow animate-fade">
+    <div class="card-header bg-gradient-primary text-white">
+        <h2 class="text-center">Détails de l'évènement</h2>
+    </div>
+
+    <div class="card-body">
+        {% if event is not defined or event is empty %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                L'événement demandé n'existe pas.
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-md-8">
+                    <table class="table details-table">
+                        <tbody>
+                            <tr>
+                                <th><i class="fas fa-hashtag me-2"></i>ID</th>
+                                <td>{{ event.id }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-tag me-2"></i>Nom</th>
+                                <td>{{ event.nom|default('Non spécifié') }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-align-left me-2"></i>Description</th>
+                                <td>{{ event.description|default('Aucune description') }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-calendar me-2"></i>Date</th>
+                                <td>{{ event.date ? event.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-clock me-2"></i>Heure de début</th>
+                                <td>{{ event.heureDebut ? event.heureDebut|date('H:i') : 'Non spécifiée' }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-clock me-2"></i>Heure de fin</th>
+                                <td>{{ event.heureFin ? event.heureFin|date('H:i') : 'Non spécifiée' }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-map-marker-alt me-2"></i>Lieu</th>
+                                <td>{{ event.lieu|default('Non spécifié') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <div class="image-container text-center">
+                        {% if event.image %}
+                           <img src="{{ asset(event.image) }}" alt="Event Image">
+                        {% else %}
+                            <div class="no-image-placeholder">
+                                <i class="fas fa-image fa-4x text-muted"></i>
+                                <p class="mt-2">Aucune image disponible</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons mt-4 text-center">
+                <a href="{{ path('app_event_index') }}" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+                <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-primary-gradient me-2">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+                {{ include('event/_delete_form.html.twig') }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block style %}
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4CAF50, #008CBA);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px 10px 0 0;
+    }
+
+    .details-table th {
+        width: 30%;
+        background-color: #f8f9fa;
+        vertical-align: middle;
+    }
+
+    .details-table td {
+        vertical-align: middle;
+    }
+
+    .image-container {
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .no-image-placeholder {
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        color: #6c757d;
+    }
+
+    .action-buttons .btn {
+        min-width: 120px;
+    }
+
+    .btn-primary-gradient {
+        background: linear-gradient(135deg, #4CAF50, #008CBA);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary-gradient:hover {
+        background: linear-gradient(135deg, #45A049, #007BB5);
+    }
+</style>
+{% endblock %}
+{% endblock %}

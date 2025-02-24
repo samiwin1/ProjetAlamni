@@ -1,0 +1,118 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    {% if user.photo %}
+                        <img src="data:image/jpeg;base64,{{ user.photo }}" 
+                             alt="avatar" class="rounded-circle img-fluid" 
+                             style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="{{ asset('back/images/avatar-4.jpg') }}" 
+                             alt="avatar" class="rounded-circle img-fluid" 
+                             style="width: 150px;">
+                    {% endif %}
+                    <h5 class="my-3">{{ user.nom }} {{ user.prenom }}</h5>
+                    <p class="text-muted mb-1">{{ user.role|replace({'ROLE_': ''}) }}</p>
+                    {% if user.role == 'ROLE_ELEVE' %}
+                        <p class="text-muted mb-4">Niveau: {{ user.niveau }} {{ user.nomNiveau }}</p>
+                    {% endif %}
+                    <div class="d-flex justify-content-center mb-2">
+                        <a href="{{ path('front_profile_edit') }}" class="btn btn-primary me-2">Modifier le profil</a>
+                        <a href="#" class="btn btn-outline-primary">Messages</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistiques -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Statistiques</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <p class="mb-0">Publications</p>
+                        <p class="mb-0 text-muted">{% if user.publications is defined %}{{ user.publications|length }}{% else %}0{% endif %}</p>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <p class="mb-0">Commentaires</p>
+                        <p class="mb-0 text-muted">{% if user.commentaires is defined %}{{ user.commentaires|length }}{% else %}0{% endif %}</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-0">Clubs</p>
+                        <p class="mb-0 text-muted">{% if user.clubs is defined %}{{ user.clubs|length }}{% else %}0{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Nom complet</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{ user.nom }} {{ user.prenom }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Email</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Téléphone</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{ user.telephone ?? 'Non renseigné' }}</p>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Date d'inscription</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{ user.dateInscription|date('d/m/Y') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activités récentes -->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">Activités récentes</h6>
+                    {% if user.activites is defined and user.activites|length > 0 %}
+                        {% for activite in user.activites %}
+                            <div class="d-flex mb-3">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-circle text-primary me-2 mt-1" style="font-size: 0.5rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0">{{ activite.description }}</p>
+                                    <small class="text-muted">{{ activite.date|date('d/m/Y H:i') }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune activité récente</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

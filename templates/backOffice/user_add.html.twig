@@ -1,0 +1,213 @@
+{% extends 'base_back.html.twig' %}
+
+{% block welc %}
+<style>
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+        display: none;
+    }
+
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
+    .form-control.is-valid {
+        border-color: #198754;
+    }
+</style>
+
+<div class="page-header">
+    <div class="card">
+        <div class="card-header">
+            <h5>Ajouter un Utilisateur</h5>
+        </div>
+        <div class="card-block" style="margin-left: 360px; margin-top: 50px;">
+            {{ form_start(form, {'attr': {'class': 'form-material', 'id': 'addUserForm', 'enctype': 'multipart/form-data', 'novalidate': 'novalidate'}}) }}
+                
+                {# Nom #}
+                <div class="form-group form-default">
+                    {{ form_label(form.nom, 'Nom') }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                    <div class="error-message"></div>
+                </div>
+
+                {# Prénom #}
+                <div class="form-group form-default">
+                    {{ form_label(form.prenom, 'Prénom') }}
+                    {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+                    <div class="error-message"></div>
+                </div>
+
+                {# Email #}
+                <div class="form-group form-default">
+                    {{ form_label(form.email, 'Email') }}
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                    <div class="error-message"></div>
+                </div>
+
+                {# Mot de passe #}
+                <div class="form-group form-default">
+                    {{ form_label(form.mot_de_passe, 'Mot de passe') }}
+                    {{ form_widget(form.mot_de_passe, {'attr': {'class': 'form-control'}}) }}
+                    <div class="error-message"></div>
+                </div>
+
+                {# Rôle #}
+                {% if form.role is defined %}
+                    <div class="form-group form-default">
+                        {{ form_label(form.role, 'Rôle') }}
+                        {{ form_widget(form.role, {'attr': {'class': 'form-control'}}) }}
+                        <div class="error-message"></div>
+                    </div>
+                {% endif %}
+
+                {# Niveau et Nom du niveau (initialement cachés) #}
+                <div class="form-group form-default niveau-fields" style="display: none;">
+                    {{ form_label(form.niveau, 'Niveau d\'études') }}
+                    {{ form_widget(form.niveau, {'attr': {'class': 'form-control'}}) }}
+                    <div class="error-message"></div>
+                </div>
+
+                <div class="form-group form-default niveau-fields" style="display: none;">
+                    {{ form_label(form.nom_niveau, 'Nom du niveau') }}
+                    {{ form_widget(form.nom_niveau, {'attr': {'class': 'form-control'}}) }}
+                    <div class="error-message"></div>
+                </div>
+
+                {# Photo #}
+                <div class="form-group form-default">
+                    {{ form_label(form.photo, 'Photo de profil') }}
+                    {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+                    <div class="error-message"></div>
+                    <small class="form-text text-muted">
+                        Formats acceptés : JPEG, PNG, GIF. Taille maximale : 2Mo
+                    </small>
+                </div>
+
+                <div class="form-group form-default">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer
+                    </button>
+                    <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('addUserForm');
+        const roleSelect = document.querySelector('select[name="user[role]"]');
+        const niveauFields = document.querySelectorAll('.niveau-fields');
+
+        // Fonctions de validation
+        function showError(input, message) {
+            const formGroup = input.closest('.form-group');
+            const errorDiv = formGroup.querySelector('.error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+        }
+
+        function showSuccess(input) {
+            const formGroup = input.closest('.form-group');
+            const errorDiv = formGroup.querySelector('.error-message');
+            errorDiv.style.display = 'none';
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 8;
+        }
+
+        function validateName(name) {
+            return name.length >= 2 && /^[a-zA-ZÀ-ÿ\s-]+$/.test(name);
+        }
+
+        // Gestion des champs de niveau
+        function toggleNiveauFields() {
+            const isEleve = roleSelect.value === 'ROLE_ELEVE';
+            niveauFields.forEach(field => {
+                field.style.display = isEleve ? 'block' : 'none';
+            });
+        }
+
+        // Validation en temps réel
+        const inputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const name = this.getAttribute('name');
+                
+                if (name.includes('[email]')) {
+                    if (!this.value) {
+                        showError(this, 'L\'email est requis');
+                    } else if (!validateEmail(this.value)) {
+                        showError(this, 'Format d\'email invalide');
+                    } else {
+                        showSuccess(this);
+                    }
+                } else if (name.includes('[mot_de_passe]')) {
+                    if (!this.value) {
+                        showError(this, 'Le mot de passe est requis');
+                    } else if (!validatePassword(this.value)) {
+                        showError(this, 'Le mot de passe doit contenir au moins 8 caractères');
+                    } else {
+                        showSuccess(this);
+                    }
+                } else if (name.includes('[nom]') || name.includes('[prenom]')) {
+                    if (!this.value) {
+                        showError(this, 'Ce champ est requis');
+                    } else if (!validateName(this.value)) {
+                        showError(this, 'Doit contenir au moins 2 caractères et uniquement des lettres');
+                    } else {
+                        showSuccess(this);
+                    }
+                }
+            });
+        });
+
+        // Validation à la soumission
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+
+            // Valider tous les champs visibles
+            inputs.forEach(input => {
+                if (input.offsetParent !== null) { // Si le champ est visible
+                    const name = input.getAttribute('name');
+                    
+                    if (name.includes('[email]') && !validateEmail(input.value)) {
+                        showError(input, 'Email invalide');
+                        isValid = false;
+                    } else if (name.includes('[mot_de_passe]') && !validatePassword(input.value)) {
+                        showError(input, 'Mot de passe invalide');
+                        isValid = false;
+                    } else if ((name.includes('[nom]') || name.includes('[prenom]')) && !validateName(input.value)) {
+                        showError(input, 'Format invalide');
+                        isValid = false;
+                    }
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Initialisation
+        roleSelect.addEventListener('change', toggleNiveauFields);
+        toggleNiveauFields();
+    });
+</script>
+{% endblock %}

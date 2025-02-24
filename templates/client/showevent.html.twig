@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ event.nom }} - Détails de l'événement{% endblock %}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="{{ asset('Front/img/favicon.ico') }}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('lib/animate/animate.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('lib/owlcarousel/assets/owl.carousel.min.css') }}">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {% block head_styles %}{% endblock %}
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        {% block navbar %}
+        <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
+            <a href="" class="navbar-brand">
+                <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav mx-auto">
+                    <a href="" class="nav-item nav-link">Home</a>
+                    <a href="" class="nav-item nav-link">About Us</a>
+                    <a href="{{ path('app_courses') }}" class="nav-item nav-link active">Événements</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
+                            <a href="" class="dropdown-item">School Facilities</a>
+                            <a href="" class="dropdown-item">Popular Teachers</a>
+                            <a href="" class="dropdown-item">Become A Teacher</a>
+                            <a href="" class="dropdown-item">Make Appointment</a>
+                        </div>
+                    </div>
+                    <a href="" class="nav-item nav-link">Contact Us</a>
+                </div>
+                <a href="#" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Join Us<i class="fa fa-arrow-right ms-3"></i></a>
+            </div>
+        </nav>
+        {% endblock %}
+
+        {% block header %}
+        <div class="container-fluid bg-primary mb-5">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 text-center">
+                        <h1 class="display-3 text-white animated slideInDown">Nos événements</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb justify-content-center">
+                                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                                <li class="breadcrumb-item"><a href="{{ path('app_event') }}">Événements</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">{{ event.nom }}</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block event_details %}
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="row g-5">
+                    <!-- Event Image -->
+                    <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="position-relative h-100">
+                            <img class="img-fluid rounded w-100 h-100" src="{{ asset('uploads/images/' ~ event.image) }}" alt="Image de l'événement {{ event.nom }}" style="object-fit: cover;">
+                        </div>
+                    </div>
+                    <!-- Event Details -->
+                    <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="h-100">
+                            <h6 class="section-title bg-white text-start text-primary pe-3">Détails de l'événement</h6>
+                            <h1 class="mb-4">{{ event.nom }}</h1>
+                            <p class="mb-4">{{ event.description }}</p>
+                            <div class="row g-4 mb-4">
+                                <div class="col-sm-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-calendar text-primary me-3"></i>
+                                        <h6 class="mb-0">Date: {{ event.date|date('d/m/Y') }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-clock text-primary me-3"></i>
+                                        <h6 class="mb-0">Début: {{ event.heureDebut|date('H:i') }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-clock text-primary me-3"></i>
+                                        <h6 class="mb-0">Fin: {{ event.heureFin|date('H:i') }}</h6>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-map-marker-alt text-primary me-3"></i>
+                                        <h6 class="mb-0">Lieu: {{ event.lieu }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <a href="{{ path('app_event') }}" class="btn btn-primary rounded-pill py-3 px-5 w-100">Retour aux événements</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block related_events %}
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                    <h6 class="section-title bg-white text-center text-primary px-3">Événements similaires</h6>
+                    <h1 class="mb-4">Autres événements qui pourraient vous intéresser</h1>
+                </div>
+                <div class="row g-4">
+                    {% if relatedEvents is defined and relatedEvents|length > 0 %}
+                        {% for relatedEvent in relatedEvents %}
+                            {% if relatedEvent.id != event.id %}
+                                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                                    <div class="courses-item position-relative">
+                                        <div class="position-relative overflow-hidden rounded">
+                                            <img class="img-fluid" src="{{ asset('uploads/images/' ~ relatedEvent.image) }}" alt="Image de l'événement {{ relatedEvent.nom }}">
+                                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
+                                                <a href="{{ path('app_event_details', {'id': relatedEvent.id}) }}" class="btn btn-primary rounded-pill py-2 px-4">En savoir plus</a>
+                                            </div>
+                                        </div>
+                                        <div class="bg-light text-center p-4">
+                                            <h5 class="mb-3">{{ relatedEvent.nom }}</h5>
+                                            <p>{{ relatedEvent.description|slice(0, 100) ~ (relatedEvent.description|length > 100 ? '...' : '') }}</p>
+                                            <div class="d-flex justify-content-between mb-4">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa fa-map-marker-alt text-primary me-2"></i>
+                                                    <small>{{ relatedEvent.lieu }}</small>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="far fa-calendar-alt text-primary me-2"></i>
+                                                    <small>{{ relatedEvent.date|date('d/m/Y') }}</small>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa fa-clock text-primary me-2"></i>
+                                                    <small>{{ relatedEvent.heureDebut|date('H:i') }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12 text-center">
+                            <p>Aucun événement similaire disponible pour le moment.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+        {% block footer %}
+        <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Contactez-nous</h3>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Liens rapides</h3>
+                        <a class="btn btn-link text-white-50" href="">À propos</a>
+                        <a class="btn btn-link text-white-50" href="">Contact</a>
+                        <a class="btn btn-link text-white-50" href="">Nos services</a>
+                        <a class="btn btn-link text-white-50" href="">Politique de confidentialité</a>
+                        <a class="btn btn-link text-white-50" href="">Conditions d'utilisation</a>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Galerie photo</h3>
+                        <div class="row g-2 pt-2">
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-1.jpg') }}" alt="Image de classe 1">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-2.jpg') }}" alt="Image de classe 2">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-3.jpg') }}" alt="Image de classe 3">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-4.jpg') }}" alt="Image de classe 4">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-5.jpg') }}" alt="Image de classe 5">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-6.jpg') }}" alt="Image de classe 6">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h3 class="text-white mb-4">Newsletter</h3>
+                        <p>Abonnez-vous à notre newsletter</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </div>

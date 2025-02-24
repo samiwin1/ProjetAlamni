@@ -1,0 +1,120 @@
+{# templates/backOffice/conditions-utilisation.html.twig #}
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Conditions d'utilisation{% endblock %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block team %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+
+{% block content %}
+    <div class="container-xxl py-5 page-header position-relative text-center">
+        <div class="container py-5">
+            <h1 class="display-2 text-white animated slideInDown mb-4">Conditions d'utilisation</h1>
+        </div>
+        <div class="wave-bottom"></div>
+    </div>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="bg-white p-5 rounded-4 shadow-lg">
+                    <div class="terms-content">
+                        <section class="mb-5">
+                            <h3 class="text-primary">1. Introduction</h3>
+                            <p>En utilisant notre plateforme, vous acceptez les présentes conditions d'utilisation...</p>
+                        </section>
+
+                        <section class="mb-5">
+                            <h3 class="text-primary">2. Utilisation du service</h3>
+                            <p>2.1. Vous devez avoir l'âge légal pour utiliser ce service.</p>
+                            <p>2.2. Vous êtes responsable de maintenir la confidentialité de votre compte.</p>
+                        </section>
+
+                        <section class="mb-5">
+                            <h3 class="text-primary">3. Protection des données</h3>
+                            <p>3.1. Nous protégeons vos données personnelles conformément à la réglementation.</p>
+                            <p>3.2. Vos informations ne seront jamais partagées sans votre consentement.</p>
+                        </section>
+
+                        <div class="text-center mt-5">
+                            <button id="acceptTerms" class="btn btn-primary">J'accepte les conditions</button>
+                            <a href="{{ path('app_signin') }}" class="btn btn-outline-secondary ms-2">Retour</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .terms-content {
+            line-height: 1.8;
+        }
+        .terms-content section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .terms-content h3 {
+            color: #FF6B6B;
+            margin-bottom: 1rem;
+        }
+        .terms-content p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        .btn-primary {
+            background: #FF6B6B;
+            border: none;
+            padding: 10px 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: #EE5253;
+            transform: translateY(-2px);
+        }
+        .btn-outline-secondary {
+            border-color: #FF6B6B;
+            color: #FF6B6B;
+            padding: 10px 25px;
+        }
+        .btn-outline-secondary:hover {
+            background: #FF6B6B;
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const acceptButton = document.getElementById('acceptTerms');
+            
+            acceptButton.addEventListener('click', function() {
+                // Stocker l'acceptation
+                localStorage.setItem('termsAccepted', 'true');
+                
+                // Si la fenêtre a été ouverte depuis la page d'inscription
+                if (window.opener) {
+                    // Cocher la case dans la page parent
+                    window.opener.document.getElementById('terms').checked = true;
+                    window.close();
+                } else {
+                    // Redirection si ouvert directement
+                    window.location.href = '{{ path('app_signin') }}';
+                }
+            });
+        });
+    </script>
+{% endblock %}
