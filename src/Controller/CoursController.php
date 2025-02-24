@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Knp\Snappy\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/cours')]
 final class CoursController extends AbstractController
@@ -19,36 +23,29 @@ final class CoursController extends AbstractController
     #[Route(name: 'app_cours_index', methods: ['GET'])]
     public function index(CoursRepository $coursRepository): Response
     {
+        // On peut ajouter une recherche ici si nécessaire
         return $this->render('cours/index.html.twig', [
             'cours' => $coursRepository->findAll(),
         ]);
     }
 
     #[Route('/new', name: 'app_cours_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $cour = new Cours();
         $form = $this->createForm(CoursType::class, $cour);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle the image upload if a file was uploaded
+            // Gestion de l'image
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
                 $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-
-                
                 try {
-                    $imageFile->move(
-                        $this->getParameter('images_directory'), // Folder path from config/services.yaml
-                        $newFilename
-                    );
-
-                    // Save the file name in the database
+                    $imageFile->move($this->getParameter('images_directory'), $newFilename);
                     $cour->setImage($newFilename);
                 } catch (FileException $e) {
-                    // Handle any errors during the file upload
-                    $this->addFlash('error', 'Failed to upload the image.');
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                     return $this->render('cours/new.html.twig', [
                         'cour' => $cour,
                         'form' => $form,
@@ -56,7 +53,26 @@ final class CoursController extends AbstractController
                 }
             }
 
-            // Persist the Cours entity (with the image filename)
+            $supportFile = $form->get('supportC')->getData();
+
+            if ($supportFile) {
+                $originalFilename = pathinfo($supportFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$supportFile->guessExtension();
+
+                try {
+                    $supportFile->move(
+                        $this->getParameter('support_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle exception if something happens during file upload
+                }
+
+                $cour->setSupportC($newFilename);
+            }
+
+            // Sauvegarde de l'entité Cours
             $entityManager->persist($cour);
             $entityManager->flush();
 
@@ -85,21 +101,15 @@ final class CoursController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle image upload during edit if a new file is provided
+            // Gestion de l'image pendant la modification
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
                 $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-
                 try {
-                    $imageFile->move(
-                        $this->getParameter('images_directory'),
-                        $newFilename
-                    );
-
-                    // Update the image path in the database
+                    $imageFile->move($this->getParameter('images_directory'), $newFilename);
                     $cour->setImage($newFilename);
                 } catch (FileException $e) {
-                    $this->addFlash('error', 'Failed to upload the image.');
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                     return $this->render('cours/edit.html.twig', [
                         'cour' => $cour,
                         'form' => $form,
@@ -107,7 +117,7 @@ final class CoursController extends AbstractController
                 }
             }
 
-            // Update other course details
+            // Sauvegarde des modifications
             $entityManager->flush();
 
             $this->addFlash('success', 'Le cours a été modifié avec succès.');
@@ -123,7 +133,7 @@ final class CoursController extends AbstractController
     #[Route('/{id}', name: 'app_cours_delete', methods: ['POST'])]
     public function delete(Request $request, Cours $cour, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$cour->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $cour->getId(), $request->request->get('_token'))) {
             try {
                 $entityManager->remove($cour);
                 $entityManager->flush();
@@ -135,31 +145,37 @@ final class CoursController extends AbstractController
 
         return $this->redirectToRoute('app_cours_index', [], Response::HTTP_SEE_OTHER);
     }
-    #[Route('/cours/search', name: 'app_cours_search_by_matiere')]
-public function rechercheParMatiere(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $keyword = $request->query->get('keyword');
 
-    if ($keyword) {
-        // Recherche par description (LIKE pour une recherche partielle)
-        $events = $entityManager
-            ->getRepository(Cours::class)
-            ->createQueryBuilder('e')
-            ->where('e.description LIKE :keyword')
-            ->setParameter('keyword', '%' . $keyword . '%')
-            ->orderBy('e.id', 'ASC')
-            ->getQuery()
-            ->getResult();
-    } else {
-        // Récupérer tous les événements
-        $events = $entityManager
-            ->getRepository(Cours::class)
-            ->findAll();
+
+
+    // Export PDF
+    #[Route('/planning/pdf', name: 'planning_pdf')]
+    public function generatePdf(CoursRepository $CoursRepository): Response
+    {
+        // Fetch all planning data
+        $cours = $CoursRepository->findAll();
+    
+        // Render the planning data into an HTML template
+        $html = $this->renderView('cours/pdf/cours.html.twig', [
+            'cours' => $cours,
+        ]);
+    
+        // Configure Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+    
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+    
+        // Stream the PDF to the browser
+        $output = $dompdf->output();
+        $response = new Response($output);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'inline; filename="planning.pdf"');
+    
+        return $response;
     }
-
-    return $this->render('cours/index.html.twig', [
-        'events' => $events,
-        'searchKeyword' => $keyword // Ajout du mot-clé dans le template
-    ]);
-}
 }

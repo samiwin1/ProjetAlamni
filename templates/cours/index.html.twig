@@ -3,7 +3,6 @@
 {% block title %}Liste des Cours{% endblock %}
 
 {% block stylesheets %}
-   
     <style>
         .table th, .table td {
             padding: 4px;
@@ -29,8 +28,8 @@
         }
 
         .course-image {
-            width: 0px; /* Réduit la largeur à 30px */
-            height: 30px; /* Réduit la hauteur à 30px */
+            width: 30px; /* Ajustez la largeur selon vos besoins */
+            height: 30px; /* Ajustez la hauteur selon vos besoins */
             object-fit: cover;
             border-radius: 2px;
         }
@@ -51,13 +50,19 @@
 {% endblock %}
 
 {% block welc %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    
     <div class="container-fluid mt-2">
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
                 <h4 class="fw-bold mb-0"><i class="fas fa-book"></i> Liste des Cours</h4>
-                <a href="{{ path('app_cours_new') }}" class="btn btn-success btn-sm">
-                    <i class="fas fa-plus-circle"></i> Ajouter
-                </a>
+                <input type="text" style="margin:15px" id="searchInput" placeholder="Rechercher par matière..." class="form-control mb-3">
+        <a href="{{ path('planning_pdf') }}" class="btn btn-info">Download PDF</a>
+                <a href="{{ path('app_cours_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Ajouter
+            </a>
             </div>
             <div class="card-body p-2">
                 {% for label, messages in app.flashes %}
@@ -82,6 +87,7 @@
                                     <th>Description</th>
                                     <th>Matière</th>
                                     <th>Date</th>
+                                    <th>Support</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -98,8 +104,15 @@
                                     </td>
                                     <td class="fw-semibold">{{ cour.titre|length > 15 ? cour.titre|slice(0, 15) ~ '...' : cour.titre }}</td>
                                     <td>{{ cour.descrC|length > 20 ? cour.descrC|slice(0, 20) ~ '...' : cour.descrC }}</td>
-                                    <td>{{ cour.matiereC|length > 10 ? cour.matiereC|slice(0, 10) ~ '...' : cour.matiereC }}</td>
+                                    <td class="matiere-column">{{ cour.matiereC|length > 10 ? cour.matiereC|slice(0, 10) ~ '...' : cour.matiereC  }}</td>
                                     <td>{{ cour.dateC ? cour.dateC|date('d/m/y') : '-' }}</td>
+                                    <td>
+                                        {% if cour.supportC %}
+                                            <a href="{{ asset('uploads/supports/' ~ cour.supportC) }}" target="_blank" class="btn btn-sm btn-secondary">Télécharger</a>
+                                        {% else %}
+                                            <span class="text-muted">Aucun</span>
+                                        {% endif %}
+                                    </td>
                                     <td class="actions-cell">
                                         <div class="btn-group">
                                             <a href="{{ path('app_devoir_by_cours', {'id': cour.id}) }}" class="btn btn-info btn-sm" title="Devoirs">
@@ -125,4 +138,23 @@
             </div>
         </div>
     </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("tbody tr"); // Targeting all rows inside the table
+
+            rows.forEach(row => {
+                let matiere = row.querySelector(".matiere-column").textContent.toLowerCase();
+                
+                if (matiere.includes(filter)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none"; // Hide row if it doesn't match
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

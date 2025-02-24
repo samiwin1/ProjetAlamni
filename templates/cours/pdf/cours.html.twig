@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Planning Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        img { max-width: 100px; height: auto; }
+    </style>
+</head>
+<body>
+    <h1>Courses Report</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Subject</th>
+                <th>Date de création</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cour in cours %}
+                <tr>
+                    <td>{{ cour.id }}</td>
+                    <td>{{ cour.titre }}</td>
+                    <td>{{ cour.descrC }}</td>
+                    <td>{{ cour.matiereC }}</td>
+                    <td>{{ cour.dateC ? cour.dateC|date('Y-m-d H:i:s') : '' }}</td>
+                    <td><img src="{{ asset('uploads/images/' ~ cour.image) }}" ></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No records found</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

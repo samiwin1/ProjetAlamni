@@ -42,6 +42,9 @@ class Cours
     #[ORM\OneToMany(mappedBy: 'cours', targetEntity: Devoir::class, cascade: ['remove'])]
     private Collection $devoirs;
 
+    #[ORM\Column(length: 255)]
+    private ?string $supportC = null;
+
     public function __construct()
     {
         $this->devoirs = new ArrayCollection();
@@ -131,6 +134,18 @@ class Cours
                 $devoir->setCours(null);
             }
         }
+        return $this;
+    }
+
+    public function getSupportC(): ?string
+    {
+        return $this->supportC;
+    }
+
+    public function setSupportC(string $supportC): static
+    {
+        $this->supportC = $supportC;
+
         return $this;
     }
 }

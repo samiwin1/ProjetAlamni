@@ -70,6 +70,20 @@ class CoursType extends AbstractType
                         'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPG ou PNG)',
                     ])
                 ],
+            ])
+            ->add('supportC', FileType::class, [
+                'label' => 'Support de cours (PDF)',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'application/pdf',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid PDF document',
+                    ])
+                ],
             ]);
     }
 

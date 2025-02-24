@@ -109,7 +109,15 @@
                                 </div>
                             </div>
 
-                           
+                            <!-- Support de cours -->
+                            <div class="mb-4">
+                                <h6 class="section-title bg-white text-start text-primary pe-3">Support de cours</h6>
+                                {% if cour.supportC %}
+                                    <a href="{{ asset('uploads/supports/' ~ cour.supportC) }}" target="_blank" class="btn btn-secondary">Télécharger le support</a>
+                                {% else %}
+                                    <p class="text-muted">Aucun support disponible</p>
+                                {% endif %}
+                            </div>
 
                             <!-- Action Buttons -->
                             <div class="row g-3">
@@ -117,11 +125,7 @@
                                     <a href="{{ path('app_courses') }}" class="btn btn-primary rounded-pill py-3 px-5 w-100">Back to Courses</a>
                                 </div>
                                 <div class="col-sm-6">
-
-<a href="{{ path('app_devoirs_by_course', {'id': cour.id }) }}" class="btn btn-primary">Devoirs</a>
-
-
-
+                                    <a href="{{ path('app_devoirs_by_course', {'id': cour.id }) }}" class="btn btn-primary">Devoirs</a>
                                 </div>
                             </div>
                         </div>
