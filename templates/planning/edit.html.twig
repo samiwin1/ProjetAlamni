@@ -1,0 +1,190 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Edit Planning{% endblock %}
+
+{% block welc %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            color: #333;
+            padding: 20px;
+        }
+
+        /* Form container */
+        .planning-container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.6s ease-in-out;
+            margin: 0 auto; /* Center horizontally if needed */
+        }
+
+        /* Form title */
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            color: #444;
+            font-size: 28px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Form group styling */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        /* Input fields */
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease-in-out;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 12px rgba(102, 126, 234, 0.3);
+            background: #fff;
+        }
+
+        /* Date and time picker styling */
+        .datetime-picker {
+            width: 100%;
+            padding: 14px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        /* Save button */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 100%;
+            color: white;
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd1, #6a3f9e);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Back to list button */
+        .btn-secondary {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #555;
+            padding: 14px;
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Error messages */
+        .form-errors {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* Animation for form container */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover effects for inputs */
+        .form-control:hover,
+        .datetime-picker:hover {
+            border-color: #667eea;
+        }
+
+        /* Placeholder styling */
+        .form-control::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+    </style>
+
+    <div class="planning-container">
+        <h1>Edit Planning</h1>
+
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter course name'}}) }}
+                <div class="form-errors">{{ form_errors(form.name) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.seance) }}
+                {{ form_widget(form.seance, {'attr': {'class': 'form-control', 'placeholder': 'Enter the science field'}}) }}
+                <div class="form-errors">{{ form_errors(form.seance) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.startTime) }}
+                {{ form_widget(form.startTime, {'attr': {'class': 'form-control datetime-picker'}}) }}
+                <div class="form-errors">{{ form_errors(form.startTime) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.endTime) }}
+                {{ form_widget(form.endTime, {'attr': {'class': 'form-control datetime-picker'}}) }}
+                <div class="form-errors">{{ form_errors(form.endTime) }}</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        {{ form_end(form) }}
+
+        <a href="{{ path('app_planning_index') }}" class="btn-secondary">Back to List</a>
+    </div>
+    
+{% endblock %}

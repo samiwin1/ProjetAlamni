@@ -1,0 +1,24 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Réinitialiser le mot de passe{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1>Réinitialiser le mot de passe</h1>
+    
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="new_password" class="form-label">Nouveau mot de passe</label>
+            <input type="password" id="new_password" name="new_password" class="form-control" required 
+                   minlength="8" placeholder="Minimum 8 caractères">
+        </div>
+        <button type="submit" class="btn btn-primary">Réinitialiser le mot de passe</button>
+    </form>
+</div>
+{% endblock %}

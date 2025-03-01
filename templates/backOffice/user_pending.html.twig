@@ -1,0 +1,59 @@
+{% extends 'base_back.html.twig' %}
+
+{% block welc %}
+<div class="card-header">
+    <h5>Demandes d'inscription</h5>
+</div>
+<div class="card-body">
+    {% if users is not empty %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>
+                                {% if user.photo %}
+                                    <img src="data:image/jpeg;base64,{{ user.photo }}" class="img-radius" alt="User Photo">
+                                {% else %}
+                                    <img src="{{ asset('back/images/avatar-4.jpg') }}" class="img-radius" alt="Default Photo">
+                                {% endif %}
+                            </td>
+                            <td>{{ user.nom }}</td>
+                            <td>{{ user.prenom }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <form method="post" action="{{ path('user_accept', {'id': user.id}) }}" style="display:inline-block;" onsubmit="return confirm('Accepter ce compte ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('accept' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-primary btn-sm">Accepter</button>
+                                </form>
+                                <form method="post" action="{{ path('user_reject', {'id': user.id}) }}" style="display:inline-block;" onsubmit="return confirm('Refuser ce compte ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('reject' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-warning btn-sm">Refuser</button>
+                                </form>
+                                <a href="{{ path('user_view', {'id': user.id}) }}" class="btn btn-success btn-sm">
+                                    Voir
+                                </a>
+                                <a href="{{ path('user_modify', {'id': user.id}) }}" class="btn btn-info btn-sm">
+                                    Modifier
+                                </a>
+                             
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Aucune demande d'inscription en attente.</div>
+    {% endif %}
+</div>
+{% endblock %}
