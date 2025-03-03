@@ -1,0 +1,19 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+conversation_index:
+    path: /conversation/
+    controller: App\Controller\ConversationController::index
+    methods: ['GET']
+
+conversation_new:
+    path: /conversation/new/{userId}
+    controller: App\Controller\ConversationController::new
+    methods: ['GET', 'POST']
+
+conversation_delete:
+    path: /conversation/{id}/delete
+    controller: App\Controller\ConversationController::delete
+    methods: ['POST']

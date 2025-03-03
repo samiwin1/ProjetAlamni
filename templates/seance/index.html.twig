@@ -1,0 +1,42 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Seance Index{% endblock %}
+{% block navbar %}{% endblock %}
+
+{% block welc %}
+    <h1>Seance Index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for seance in seances %}
+            <tr>
+                <td>{{ seance.id }}</td>
+                <td>{{ seance.name }}</td>
+                <td>{{ seance.description }}</td>
+                <td class="actions">
+                    <a href="{{ path('app_seance_edit', {'id': seance.id}) }}" class="btn btn-warning">Edit</a>
+                    <form action="{{ path('app_seance_delete', {'id': seance.id}) }}" method="post" style="display: inline;">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ seance.id) }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="no-records">No records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_seance_new') }}" class="btn btn-success">Create New</a>
+{% endblock %}

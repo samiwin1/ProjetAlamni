@@ -1,0 +1,182 @@
+{% extends 'base_front.html.twig' %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block team %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+
+{% block title %}Liste des Conversations{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="container-xxl py-5 page-header position-relative mb-5">
+        <div class="container py-5 text-center">
+            <h1 class="display-2 text-white animated slideInDown mb-4">💬 Mes Conversations</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_home') }}" class="text-white">🏠 Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-white">📄 Pages</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">📬 Boîte de discussions</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <main class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center pt-4 pb-3">
+                    <h1 class="h3 text-orange">💬 Mes Conversations</h1>
+                    <div class="d-flex gap-3">
+                        <!-- Favorite Conversations Button -->
+                        <a href="{{ path('conversation_favorites') }}" class="btn btn-outline-orange">
+                            ⭐ Favoris
+                        </a>
+
+                        <!-- All Conversations Button -->
+                        <a href="{{ path('conversation_index') }}" class="btn btn-outline-orange">
+                            📬 Tous
+                        </a>
+
+                        <!-- New Conversation Button -->
+                        <a href="{{ path('conversation_new', { userId: currentUser.id }) }}" class="btn btn-orange">
+                            ➕ Nouvelle Conversation
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Flash Messages -->
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% endfor %}
+                {% for message in app.flashes('info') %}
+                    <div class="alert alert-info">{{ message }}</div>
+                {% endfor %}
+
+                <!-- Conversations List -->
+                {% if conversationsWithFavorites is not empty %}
+                    <div class="card shadow-sm p-3 border-0">
+                        {% for conversationData in conversationsWithFavorites %}
+                            {% set conversation = conversationData.conversation %}
+                            {% set isFavorite = conversationData.isFavorite %}
+
+                            <div class="card conversation-item p-3 border-0 bg-light rounded shadow-sm {% if isFavorite %}favorite{% endif %}"
+                                 onclick="window.location='{{ path('app_message_show', { id: conversation.id }) }}';">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="text-decoration-none text-dark fw-bold">
+                                            {% if conversation.user1.id == currentUser.id %}
+                                                {{ conversation.user2.nom }}
+                                            {% else %}
+                                                {{ conversation.user1.nom }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Favorite Button -->
+                                        <form method="post" action="{{ path('toggle_favorite', { id: conversation.id }) }}" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('favorite' ~ conversation.id) }}">
+                                            <button type="submit" class="btn btn-favorite {% if isFavorite %}favorited{% endif %}" onclick="event.stopPropagation();">
+                                                {% if isFavorite %} ⭐ {% else %} ☆ {% endif %}
+                                            </button>
+                                        </form>
+
+                                        <!-- Delete Button -->
+                                        <form method="post" action="{{ path('conversation_delete', { id: conversation.id }) }}" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ conversation.id) }}">
+                                            <button type="submit" class="btn btn-outline-orange btn-sm" onclick="event.stopPropagation();">🗑️</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center mt-4">Aucune conversation trouvée.</p>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Styles -->
+    <style>
+        /* 🎨 Couleurs personnalisées */
+        .text-orange {
+            color: #ff6f00 !important;
+        }
+
+        .bg-orange {
+            background: #ff6f00 !important;
+        }
+
+        .btn-orange {
+            background: #ff6f00;
+            color: white;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-orange:hover {
+            background: #e65c00;
+        }
+
+        .btn-outline-orange {
+            border: 2px solid #ff6f00;
+            color: #ff6f00;
+            transition: 0.3s;
+        }
+
+        .btn-outline-orange:hover {
+            background: #ff6f00;
+            color: white;
+        }
+
+        /* 📜 Style des cartes de conversation */
+        .conversation-item {
+            border-left: 4px solid #ff6f00;
+            transition: 0.3s ease-in-out;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .conversation-item:hover {
+            background: #ffebd3;
+        }
+
+        /* ⭐ Style pour les conversations favorites */
+        .favorite {
+            border-left: 4px solid gold !important;
+            background: #fff6d5 !important;
+        }
+
+        /* Favorite Button */
+        .btn-favorite {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .btn-favorite:hover {
+            background-color: rgba(255, 165, 0, 0.2);
+        }
+
+        .favorited {
+            color: gold;
+            font-weight: bold;
+        }
+    </style>
+</div>
+
+{% endblock %}

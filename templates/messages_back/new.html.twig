@@ -1,0 +1,36 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}New Conversation{% endblock %}
+
+{% block welc %}
+    <div class="container mt-4">
+        <h2 class="mb-4">Start a New Conversation</h2>
+
+        <!-- Flash Messages -->
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('info') %}
+            <div class="alert alert-info">{{ message }}</div>
+        {% endfor %}
+
+        <!-- New Conversation Form -->
+        <form method="post">
+            <div class="mb-3">
+                <label for="recipient" class="form-label">Select Recipient</label>
+                <select id="recipient" name="recipient" class="form-select" required>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.fullName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="message" class="form-label">Message</label>
+                <textarea id="message" name="message" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+{% endblock %}

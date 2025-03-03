@@ -1,0 +1,45 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Mes Conversations{% endblock %}
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block team %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block content %}
+
+<h1>Conversation with {{ conversation.user1.nom }} and {{ conversation.user2.nom }}</h1>
+
+{# Display Flash Messages #}
+{% for message in app.flashes('error') %}
+    <div class="alert alert-danger">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('info') %}
+    <div class="alert alert-info">{{ message }}</div>
+{% endfor %}
+
+{# Display existing messages #}
+<div class="messages">
+    {% for message in messages %}
+        <div class="message">
+            <strong>{{ message.sender.nom }}:</strong> {{ message.content }}
+            <br>
+            <small>{{ message.createdAt|date('Y-m-d H:i:s') }}</small>
+        </div>
+    {% else %}
+        <p>Aucun message trouvé dans cette conversation.</p>
+    {% endfor %}
+</div>
+
+{# Form for creating a new message #}
+<h2>Envoyer un nouveau message</h2>
+{{ form_start(form) }}
+    {{ form_row(form.content) }} {# Assuming 'content' is the name of the field for the message content #}
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+{{ form_end(form) }}
+
+<a href="{{ path('app_message_index') }}">Retour à la liste des messages</a>
+
+{% endblock %}

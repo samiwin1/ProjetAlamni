@@ -1,0 +1,128 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Messages entre {{ conversation.user1.nom }} & {{ conversation.user2.nom }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="chat-container mx-auto card shadow-lg rounded" style="max-width: 800px; background: #f0f2f5;">
+        
+        <!-- 🔸 Header -->
+        <div class="chat-header text-center bg-primary text-white p-3 rounded-top shadow-sm">
+            <h2 class="fw-bold">💬 Conversation</h2>
+        </div>
+
+        <!-- 📌 Pinned Messages -->
+        {% if pinnedMessages is not empty %}
+        <div class="pinned-messages p-3 bg-light border-bottom">
+            <h5 class="mb-2 text-dark">📌 Messages Épinglés</h5>
+            {% for message in pinnedMessages %}
+                <div class="d-flex justify-content-between align-items-center bg-warning p-2 rounded shadow-sm mb-2">
+                    <p class="message-text mb-0 text-dark fw-bold">{{ message.content }}</p>
+                    <form action="{{ path('message_unpin', {id: message.id}) }}" method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token('unpin' ~ message.id) }}">
+                        <button type="submit" class="btn btn-sm btn-light">❌</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- 📩 Chat Messages -->
+        <div class="chat-box overflow-auto p-3 bg-white rounded" id="chatMessages" style="max-height: 500px; display: flex; flex-direction: column-reverse;">
+            {% for message in messages %}
+                <div class="d-flex {% if message.sender.nom == app.user.nom %} justify-content-end {% else %} justify-content-start {% endif %} mb-3">
+                    <div class="message-bubble {% if message.sender.nom == app.user.nom %} bg-primary text-white {% else %} bg-light text-dark {% endif %} p-3 rounded shadow-sm position-relative"
+                         style="max-width: 70%; border-radius: 18px; padding: 10px 15px;">
+                        
+                        <!-- 🟠 User Avatar & Name -->
+                        <div class="d-flex align-items-center mb-1">
+                            <img src="{{ message.sender.avatar ?? '/images/default-avatar.png' }}" class="avatar rounded-circle me-2" width="35">
+                            <strong class="small">{{ message.sender.nom }}</strong>
+                        </div>
+
+                        <!-- 💬 Message Content -->
+                        <p class="message-text mt-1 mb-1" id="message-text-{{ message.id }}">{{ message.content }}</p>
+
+                        <!-- ✏️ Edit Form (Hidden by Default) -->
+                        <form id="edit-form-{{ message.id }}" method="post" action="{{ path('app_message_edit', { id: message.id }) }}" class="edit-form d-none">
+                            <input type="hidden" name="_token" value="{{ csrf_token('edit' ~ message.id) }}">
+                            <textarea name="content" class="form-control">{{ message.content }}</textarea>
+                            <div class="d-flex mt-2">
+                                <button type="submit" class="btn btn-sm btn-success">✔️</button>
+                                <button type="button" class="btn btn-sm btn-danger ms-2" onclick="cancelEdit('{{ message.id }}')">❌</button>
+                            </div>
+                        </form>
+
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <!-- 👍 Like & 👎 Dislike -->
+                            <div class="d-flex gap-2">
+                                <form action="{{ path('app_message_like', {id: message.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('like' ~ message.id) }}">
+                                    <button type="submit" class="btn btn-sm {% if message.sender.nom == app.user.nom %} text-white {% else %} text-dark {% endif %}">👍 {{ message.likesCount }}</button>
+                                </form>
+                                <form action="{{ path('app_message_dislike', {id: message.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('dislike' ~ message.id) }}">
+                                    <button type="submit" class="btn btn-sm {% if message.sender.nom == app.user.nom %} text-white {% else %} text-dark {% endif %}">👎 {{ message.dislikesCount }}</button>
+                                </form>
+                            </div>
+
+                            <!-- ⏰ Timestamp -->
+                            <span class="message-time small text-muted">{{ message.createdAt|date('H:i') }}</span>
+                        </div>
+
+                        <!-- ✏️ 🗑️ Edit/Delete Icons -->
+                        {% if message.sender.nom == app.user.nom %}
+                        <div class="position-absolute" style="top: 5px; right: 5px;">
+                            <button class="btn btn-sm text-white" onclick="editMessage('{{ message.id }}')">✏️</button>
+                            <form id="delete-form-{{ message.id }}" action="{{ path('app_message_delete', {id: message.id}) }}" method="post" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ message.id) }}">
+                                <button type="submit" class="btn btn-sm text-white">🗑️</button>
+                            </form>
+                        </div>
+                        {% endif %}
+
+                        <!-- 📌 Pin Message -->
+                        <form action="{{ message.isPinned ? path('message_unpin', {id: message.id}) : path('message_pin', {id: message.id}) }}" method="post" class="position-absolute" style="top: 5px; left: 5px;">
+                            <input type="hidden" name="_token" value="{{ csrf_token(message.isPinned ? 'unpin' ~ message.id : 'pin' ~ message.id) }}">
+                            <button type="submit" class="btn btn-sm {% if message.isPinned %} btn-warning {% else %} btn-outline-secondary {% endif %}">
+                                {% if message.isPinned %} 📍 {% else %} 📌 {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">Aucun message trouvé.</p>
+            {% endfor %}
+        </div>
+
+        <!-- 📨 New Message Form (Floating Input Box) -->
+        <div class="message-form bg-white p-3 position-sticky bottom-0">
+            {{ form_start(form, {'attr': {'id': 'new-message-form', 'class': 'needs-validation'}}) }}
+                <div class="input-group">
+                    {{ form_widget(form.content, {'attr': {'class': 'form-control', 'placeholder': 'Tapez votre message...'}}) }}
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Auto Scroll & Editing -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var chatBox = document.getElementById("chatMessages");
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
+    });
+
+    function editMessage(messageId) {
+        document.getElementById("message-text-" + messageId).style.display = "none";
+        document.getElementById("edit-form-" + messageId).classList.remove("d-none");
+    }
+
+    function cancelEdit(messageId) {
+        document.getElementById("message-text-" + messageId).style.display = "block";
+        document.getElementById("edit-form-" + messageId).classList.add("d-none");
+    }
+</script>
+
+{% endblock %}

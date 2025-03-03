@@ -1,0 +1,75 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Discussions{% endblock %}
+
+{% block welc %}
+
+<!-- Flash Messages -->
+{% for message in app.flashes('error') %}
+    <div class="alert alert-danger">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('info') %}
+    <div class="alert alert-info">{{ message }}</div>
+{% endfor %}
+
+<!-- New Conversation Button -->
+<div class="d-flex justify-content-end mb-4">
+    <a href="{{ path('conversationAdmin_new', {'userId': app.user.id}) }}" class="btn btn-success px-4 py-2">
+        <i class="fas fa-plus"></i> Nouvelle Conversation
+    </a>
+</div>
+
+<!-- Conversations List -->
+{% if conversations is not empty %}
+    <div class="card p-3 border-0">
+        {% for conversation in conversations %}
+            <div class="card conversation-item p-3 mb-3 border-0 bg-white rounded shadow-sm position-relative"
+                 onclick="window.location='{{ path('app_message_show1', { id: conversation.id }) }}';"
+                 style="cursor: pointer; transition: 0.3s;">
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="fw-bold text-dark">
+                            <i class="fas fa-comments text-success"></i>
+                            {{ conversation.user1.fullName }} - {{ conversation.user2.fullName }}
+                        </span>
+                    </div>
+
+                    <!-- Delete Form -->
+                    <form method="post" action="{{ path('conversation_delete', { id: conversation.id }) }}" style="display:inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ conversation.id) }}">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="event.stopPropagation(); confirmDelete(event, this);">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted text-center mt-4">Aucune conversation trouvée.</p>
+{% endif %}
+
+
+
+<!-- Custom Styles -->
+
+<style>
+    .conversation-item:hover {
+        background: #f8f9fa !important;
+        transform: scale(1.02);
+        transition: all 0.2s ease-in-out;
+    }
+</style>
+
+<!-- JavaScript for Delete Confirmation -->
+<script>
+    function confirmDelete(event, button) {
+        event.preventDefault();
+        if (confirm("Êtes-vous sûr de vouloir supprimer cette conversation ?")) {
+            button.closest('form').submit();
+        }
+    }
+</script>
+
+{% endblock %}

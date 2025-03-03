@@ -1,0 +1,159 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Messages - Conversation{% endblock %}
+
+{% block welc %}
+<div class="container mt-4">
+    <h2 class="mb-4">Messages de la Conversation</h2>
+
+    <div class="card p-3 shadow-sm">
+        <h5 class="fw-bold">Participants:</h5>
+        <p>{{ conversation.user1.fullName }} & {{ conversation.user2.fullName }}</p>
+    </div>
+
+    <!-- ✅ Search Bar -->
+    <div class="mt-4">
+        <h5 class="fw-bold">Rechercher un message :</h5>
+        <input type="text" id="searchInput" class="form-control" placeholder="Tapez un mot-clé..." onkeyup="searchMessages()">
+    </div>
+
+    <h5 class="fw-bold mt-4">Messages:</h5>
+    {% if messages is not empty %}
+        <ul class="list-group">
+            {% for message in messages %}
+                <li class="list-group-item {% if message.sender == conversation.user1 %}bg-light{% else %}bg-white{% endif %}" id="message-{{ message.id }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ message.sender.fullName }}</strong>
+                            <p id="message-content-{{ message.id }}" class="mb-1">{{ message.content }}</p>
+                            <small class="text-muted">{{ message.createdAt|date('d/m/Y H:i') }}</small>
+                        </div>
+
+                        {% if message.sender == app.user %}
+                            <div class="d-flex gap-2">
+                                <!-- Edit Button -->
+                                <button class="btn btn-outline-warning btn-sm edit-btn" data-message-id="{{ message.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <!-- Edit Form (Hidden by Default) -->
+<form method="post" action="{{ path('app_message_editAdmin', { id: message.id }) }}" 
+    class="edit-form d-none mt-2" id="edit-form-{{ message.id }}">
+    <div class="input-group">
+        <textarea name="content" class="form-control edit-message-input" id="edit-content-{{ message.id }}" 
+                  rows="2" maxlength="500">{{ message.content }}</textarea>
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i></button>
+    </div>
+    <div class="text-danger mt-1 d-none" id="error-msg-{{ message.id }}">
+        <small>Le message ne peut pas être vide.</small>
+    </div>
+</form>
+
+                                <!-- Delete Button -->
+<!-- Formulaire de suppression avec protection CSRF -->
+<form method="post" action="{{ path('app_message_deleteAdmin', { id: message.id }) }}" class="ms-2">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ message.id) }}">
+    <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+</form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Aucun message trouvé.</p>
+    {% endif %}
+
+    <!-- ✅ Message Sending Form -->
+    {% if app.user == conversation.user1 or app.user == conversation.user2 %}
+<div class="mt-4">
+    <h5 class="fw-bold">Envoyer un message :</h5>
+    {{ form_start(form) }}
+        <div class="input-group">
+            {{ form_widget(form.content, {'attr': {'class': 'form-control', 'maxlength': '500'}}) }}
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </div>
+        
+        {% if form.content.vars.errors|length > 0 %}
+            <div class="text-danger mt-1">
+                {% for error in form.content.vars.errors %}
+                    <small>{{ error.message }}</small><br>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+    {{ form_end(form) }}
+</div>
+    {% endif %}
+
+    <a href="{{ path('conversation_admin_index') }}" class="btn btn-success mt-3">Retour aux Conversations</a>
+</div>
+
+<!-- ✅ JavaScript for Search & Dynamic Edit Form Toggle -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // ✅ Function to toggle edit form visibility
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                let messageId = this.getAttribute("data-message-id");
+                let editForm = document.getElementById("edit-form-" + messageId);
+                let messageContent = document.getElementById("message-content-" + messageId);
+
+                if (editForm.classList.contains("d-none")) {
+                    editForm.classList.remove("d-none");
+                    messageContent.style.display = "none"; // Hide the message text
+                } else {
+                    editForm.classList.add("d-none");
+                    messageContent.style.display = "block"; // Show the message text
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".edit-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let messageId = this.getAttribute("data-message-id");
+            let editForm = document.getElementById("edit-form-" + messageId);
+            let messageContent = document.getElementById("message-content-" + messageId);
+
+            if (editForm.classList.contains("d-none")) {
+                editForm.classList.remove("d-none");
+                messageContent.style.display = "none"; // Cacher le texte du message
+            } else {
+                editForm.classList.add("d-none");
+                messageContent.style.display = "block"; // Afficher à nouveau le texte
+            }
+        });
+    });
+
+    document.querySelectorAll(".edit-form").forEach(form => {
+        form.addEventListener("submit", function (event) {
+            let messageId = this.getAttribute("id").replace("edit-form-", "");
+            let messageInput = document.getElementById("edit-content-" + messageId);
+            let errorMsg = document.getElementById("error-msg-" + messageId);
+
+            if (messageInput.value.trim() === "") {
+                event.preventDefault(); // Empêcher l'envoi du formulaire si vide
+                errorMsg.classList.remove("d-none");
+            } else {
+                errorMsg.classList.add("d-none");
+            }
+        });
+    });
+});
+
+
+        // ✅ Function to filter messages dynamically
+        function searchMessages() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            document.querySelectorAll(".list-group-item").forEach(message => {
+                message.style.display = message.textContent.toLowerCase().includes(input) ? "" : "none";
+            });
+        }
+
+        window.searchMessages = searchMessages;
+    });
+</script>
+
+{% endblock %}

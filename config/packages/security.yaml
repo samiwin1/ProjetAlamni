@@ -1,0 +1,63 @@
+# config/packages/security.yaml
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+    
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            
+            # Définir un seul authenticator comme entry_point
+            entry_point: App\Security\CustomAuthenticator
+            
+            # Configuration des authenticators
+            custom_authenticator: App\Security\CustomAuthenticator
+            
+            # Supprimer ou commenter form_login si vous utilisez CustomAuthenticator
+            # form_login:
+            #     login_path: app_login
+            #     check_path: app_login
+            #     enable_csrf: true
+            #     username_parameter: email
+            #     password_parameter: password
+            
+            logout:
+                path: app_logout
+                target: app_home
+            
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+
+    access_control:
+        # Routes publiques
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/about, roles: PUBLIC_ACCESS }
+        - { path: ^/classes, roles: PUBLIC_ACCESS }
+        - { path: ^/contact, roles: PUBLIC_ACCESS }
+        - { path: ^/team, roles: PUBLIC_ACCESS }
+        - { path: ^/facility, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        
+        # Routes protégées
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/profile-utilisateur, roles: ROLE_USER }
+        - { path: ^/appointment, roles: ROLE_USER }
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+        ROLE_ENSEIGNANT: ROLE_USER
+        ROLE_ETUDIANT: ROLE_USER
+        ROLE_PARENT: ROLE_USER

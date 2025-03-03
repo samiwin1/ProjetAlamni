@@ -1,0 +1,89 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Nouvelle Conversation{% endblock %}
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block team %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Page Header -->
+    <div class="container-xxl py-5 page-header position-relative mb-5">
+        <div class="container py-5 text-center">
+            <h1 class="display-4 text-white animated slideInDown mb-4">📩 Nouvelle Conversation</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb justify-content-center">
+                    <li class="breadcrumb-item"><a href="{{ path('app_home') }}" class="text-white">🏠 Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-white">📄 Pages</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">📬 Boite de discussions</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Centered Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg p-4 rounded">
+                <h2 class="text-center mb-4">💬 Démarrer une conversation</h2>
+
+                <!-- Flash Messages -->
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">{{ message }}</div>
+                {% endfor %}
+                {% for message in app.flashes('info') %}
+                    <div class="alert alert-info">{{ message }}</div>
+                {% endfor %}
+
+                <!-- Conversation Form -->
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="recipient" class="form-label">👤 Choisissez un utilisateur :</label>
+                        <select name="recipient" id="recipient" class="form-select" required>
+                            <option value="">🔽 Sélectionnez un utilisateur</option>
+                            {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="message" class="form-label">💬 Message :</label>
+                        <textarea name="message" id="message" class="form-control" rows="4" placeholder="Écrivez votre message ici..." required></textarea>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary px-4 py-2">📨 Envoyer</button>
+                        <a href="{{ path('conversation_index') }}" class="btn btn-outline-secondary px-4 py-2 ms-2">↩️ Retour</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .card {
+        border-radius: 12px;
+        background: #ffffff;
+    }
+
+   
+
+   
+
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        transition: 0.3s;
+    }
+
+    select, textarea {
+        border-radius: 6px;
+    }
+</style>
+{% endblock %}

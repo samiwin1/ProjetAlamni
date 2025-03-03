@@ -1,0 +1,40 @@
+
+{# {% block title %}Messages for {{ conversation.user1.nom }} and {{ conversation.user2.nom }}{% endblock %} #}
+
+{% block body %}
+    {# <h1>Messages for {{ conversation.user1.nom }} and {{ conversation.user2.nom }}</h1> #}
+
+    {# Display Flash Messages #}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('info') %}
+        <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+
+    {# Check if there are any messages #}
+    {% if messages is not empty %}
+        <ul class="list-group mb-3">
+            {% for message in messages %}
+                <li class="list-group-item">
+                    <strong>{{ message.sender.nom }}:</strong> {{ message.content }} 
+                    <em class="text-muted">{{ message.createdAt|date('Y-m-d H:i') }}</em>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun message trouvé pour cette conversation.</p>
+    {% endif %}
+
+    {# Form to send a new message #}
+    <h2>Envoyer un nouveau message</h2>
+    <form action="{{ path('app_message_new') }}" method="POST">
+        {# <input type="hidden" name="conversation_id" value="{{ conversation.id }}"> #}
+        <div class="form-group">
+            <textarea name="message" class="form-control" rows="4" placeholder="Écrire votre message ici..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Envoyer</button>
+    </form>
+
+    <a href="{{ path('conversation_index') }}" class="btn btn-secondary mt-3">Retour à la liste des conversations</a>
+{% endblock %}

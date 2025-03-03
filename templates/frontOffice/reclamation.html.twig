@@ -1,0 +1,130 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Envoyer une Réclamation{% endblock %}
+
+{% block hero %}{% endblock %}
+{% block call_to_action %}{% endblock %}
+{% block appointment %}{% endblock %}
+{% block testimonial %}{% endblock %}
+{% block classes %}{% endblock %}
+{% block about %}{% endblock %}
+{% block team %}{% endblock %}
+
+
+{% block content %}
+<div class="container-xxl py-5 d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="container">
+        <div class="bg-light rounded d-flex justify-content-center align-items-center p-4">
+            <div class="col-lg-8 wow fadeIn" data-wow-delay="0.1s">
+                <div class="h-100 d-flex flex-column justify-content-center align-items-center p-4 text-center">
+                    <h1 class="mb-4 text-primary">Envoyer une Réclamation</h1>
+                    
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success text-center fade-out">
+                          {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    {% for message in app.flashes('error') %}
+                        <div class="alert alert-danger text-center">
+                          {{ message }}
+                        </div>
+                    {% endfor %}
+
+                    {% if form is defined %}
+                        {{ form_start(form, {'attr': {'id': 'reclamationForm', 'novalidate': 'novalidate'}}) }}
+                        <div class="row g-3">
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_widget(form.user_email, {'attr': {'class': 'form-control', 'readonly': 'readonly'}}) }}
+                                    <label>Votre Email</label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_widget(form.role, {'attr': {'class': 'form-control', 'readonly': 'readonly'}}) }}
+                                    <label>Votre Rôle</label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_widget(form.admin_mail, {'attr': {'class': 'form-control'}}) }}
+                                    <label>Email de l'Administrateur</label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_widget(form.objet, {'attr': {'class': 'form-control'}}) }}
+                                    <label>Objet de la Réclamation</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+                                    <label>Description</label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button class="btn btn-primary w-100 py-3" type="submit">Soumettre</button>
+                            </div>
+                        </div>
+                        {{ form_end(form) }}
+                    {% else %}
+                        <p class="text-danger text-center">⚠️ Le formulaire n'a pas été chargé correctement.</p>
+                    {% endif %}
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+ document.addEventListener("DOMContentLoaded", function() {
+    document.querySelector("form").addEventListener("submit", function(event) {
+        let valid = true;
+        let email = document.getElementById("user_email").value.trim();
+        let role = document.getElementById("role").value;
+        let objet = document.getElementById("objet").value.trim();
+        let description = document.getElementById("description").value.trim();
+
+        function showError(id, message) {
+            let errorDiv = document.getElementById("error_" + id);
+            errorDiv.innerText = message;
+        }
+
+        function clearError(id) {
+            let errorDiv = document.getElementById("error_" + id);
+            errorDiv.innerText = "";
+        }
+
+        if (!email) { showError("user_email", "L'email est obligatoire."); valid = false; } else { clearError("user_email"); }
+        if (!role) { showError("role", "Veuillez sélectionner un rôle."); valid = false; } else { clearError("role"); }
+        if (!objet) { showError("objet", "L'objet est obligatoire."); valid = false; } else { clearError("objet"); }
+        if (!description) { showError("description", "Veuillez entrer une description."); valid = false; } else { clearError("description"); }
+
+        if (!valid) event.preventDefault();
+    });
+});
+    document.addEventListener("DOMContentLoaded", function() {
+        // Sélectionner toutes les alertes avec la classe "fade-out"
+        let alerts = document.querySelectorAll(".alert-success");
+
+        alerts.forEach(function(alert) {
+            // Définir un timer pour masquer l'alerte après 3 secondes (3000ms)
+            setTimeout(function() {
+                alert.style.transition = "opacity 0.5s ease-out";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500); // Supprimer après l'animation
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}
