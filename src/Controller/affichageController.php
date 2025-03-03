@@ -3,24 +3,24 @@
 namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\Event;
-use App\Entity\Rating;
+use App\Entity\Ratting;
 use App\Entity\Reservation;
 use App\Repository\EventRepository;
 use App\Repository\CategoryRepository;
-use App\Repository\RatingRepository;
+use App\Repository\RattingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/client')]
-final class ClientController extends AbstractController
+#[Route('/affichage')]
+final class affichageController extends AbstractController
 {
-    #[Route(name: 'app_client')]
+    #[Route(name: 'app_affichage')]
     public function index(): Response
     {
-        return $this->render('client/index.html.twig');
+        return $this->render('affichage/index.html.twig');
     }
 
     #[Route('/event', name: 'app_event')]
@@ -35,7 +35,7 @@ final class ClientController extends AbstractController
         }
 
         // Pass the events data to the template
-        return $this->render('client/event.html.twig', [
+        return $this->render('affichage/event.html.twig', [
             'events' => $events,
         ]);
     }
@@ -55,13 +55,13 @@ final class ClientController extends AbstractController
             throw $this->createNotFoundException('No related events found');
         }
 
-        // Get ratings for the event
-        $ratings = $event->getRatings();
+        // Get rattings for the event
+        $rattings = $event->getRattings();
 
-        return $this->render('client/details.html.twig', [
+        return $this->render('affichage/details.html.twig', [
             'event' => $event,
             'relatedevents' => $relatedevents,
-            'ratings' => $ratings,
+            'rattings' => $rattings,
         ]);
     }
 
@@ -85,13 +85,13 @@ final class ClientController extends AbstractController
         $user = $this->getUser();
         $favorites = $user->getFavoriteEvents();
 
-        return $this->render('client/favorites.html.twig', [
+        return $this->render('affichage/favorites.html.twig', [
             'favorites' => $favorites,
         ]);
     }
 
     #[Route('/event/{id}/rate', name: 'rate_event', methods: ['POST'])]
-    public function rateEvent($id, Request $request, EventRepository $eventRepository, RatingRepository $ratingRepository, EntityManagerInterface $entityManager): Response
+    public function rateEvent($id, Request $request, EventRepository $eventRepository, RattingRepository $rattingRepository, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -99,7 +99,7 @@ final class ClientController extends AbstractController
             return $this->redirectToRoute('app_event1_show', ['id' => $id]);
         }
 
-        $ratingValue = $request->request->get('rating');
+        $rattingValue = $request->request->get('ratting');
 
         // Find the event by ID
         $event = $eventRepository->find($id);
@@ -108,20 +108,20 @@ final class ClientController extends AbstractController
         }
 
         // Check if the user has already rated this event
-        $existingRating = $ratingRepository->findOneBy(['event' => $event, 'user' => $user]);
-        if ($existingRating) {
+        $existingRatting = $rattingRepository->findOneBy(['event' => $event, 'user' => $user]);
+        if ($existingRatting) {
             $this->addFlash('error', 'You have already rated this event.');
             return $this->redirectToRoute('app_event1_show', ['id' => $id]);
         }
 
-        // Create a new rating
-        $rating = new Rating();
-        $rating->setEvent($event);
-        $rating->setUser($user);
-        $rating->setRating($ratingValue);
+        // Create a new ratting
+        $ratting = new Ratting();
+        $ratting->setEvent($event);
+        $ratting->setUser($user);
+        $ratting->setRatting($rattingValue);
 
-        // Save the rating
-        $entityManager->persist($rating);
+        // Save the ratting
+        $entityManager->persist($ratting);
         $entityManager->flush();
 
         return $this->redirectToRoute('app_event1_show', ['id' => $id]);

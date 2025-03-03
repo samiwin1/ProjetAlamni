@@ -111,7 +111,7 @@
                                 <li class="list-group-item"><strong>End Time:</strong> {{ event.heureFin ? event.heureFin|date('H:i') : '' }}</li>
                                 <li class="list-group-item"><strong>Location:</strong> {{ event.lieu }}</li>
                                 <li class="list-group-item"><strong>Category:</strong> {{ event.category.nom }}</li>
-                                <li class="list-group-item"><strong>Ratings:</strong> {{ event.getTotalRatings() }} ratings</li>
+                                <li class="list-group-item"><strong>Ratings:</strong> {{ event.getTotalRattings() }} rattings</li>
                             </ul>
                             <a href="{{ path('app_event') }}" class="btn btn-primary mt-3">Back to Events</a>
                             {% if event.isFull() %}

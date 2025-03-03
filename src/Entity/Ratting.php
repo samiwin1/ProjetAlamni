@@ -2,20 +2,20 @@
 
 namespace App\Entity;
 
-use App\Repository\RatingRepository;
+use App\Repository\RattingRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RatingRepository::class)]
-class Rating
+#[ORM\Entity(repositoryClass: RattingRepository::class)]
+class Ratting
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'ratings')]
+    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'rattings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $event = null;
 
@@ -24,7 +24,7 @@ class Rating
     private ?User $user = null;
 
     #[ORM\Column(type: 'integer')]
-    private ?int $rating = null;
+    private ?int $ratting = null;
 
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
@@ -32,7 +32,7 @@ class Rating
     /**
      * @var Collection<int, event>
      */
-    #[ORM\OneToMany(targetEntity: event::class, mappedBy: 'rating')]
+    #[ORM\OneToMany(targetEntity: event::class, mappedBy: 'ratting')]
     private Collection $event_id;
 
     public function __construct()
@@ -70,17 +70,16 @@ class Rating
         return $this;
     }
 
-    public function getRating(): ?int
+    public function getRatting(): ?int
     {
-        return $this->rating;
+        return $this->ratting;
     }
 
-    public function setRating(int $rating): self
-    {
-        $this->rating = $rating;
-
-        return $this;
-    }
+    public function setRatting(?int $ratting): self
+{
+    $this->ratting = $ratting;
+    return $this;
+}
 
     public function getCreatedAt(): ?\DateTimeInterface
     {
@@ -106,7 +105,7 @@ class Rating
     {
         if (!$this->event_id->contains($eventId)) {
             $this->event_id->add($eventId);
-            $eventId->setRating($this);
+            $eventId->setRatting($this);
         }
 
         return $this;
@@ -116,8 +115,8 @@ class Rating
     {
         if ($this->event_id->removeElement($eventId)) {
             // set the owning side to null (unless already changed)
-            if ($eventId->getRating() === $this) {
-                $eventId->setRating(null);
+            if ($eventId->getRatting() === $this) {
+                $eventId->setRatting(null);
             }
         }
 

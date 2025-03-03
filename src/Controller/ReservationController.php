@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ReservationController extends AbstractController
 {
-    #[Route('/client/event/{id}/reserve', name: 'reserve_ticket', methods: ['GET','POST'])]
+    #[Route('/front/event/{id}/reserve', name: 'reserve_ticket', methods: ['GET','POST'])]
     public function reserveTicket($id, Request $request, EventRepository $eventRepository, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();

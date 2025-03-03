@@ -57,8 +57,8 @@ class Event
     #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'event', orphanRemoval: true)]
     private Collection $favorites;
 
-    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'event', orphanRemoval: true)]
-    private Collection $ratings;
+    #[ORM\OneToMany(targetEntity: Ratting::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $rattings;
 
     #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'event', orphanRemoval: true)]
     private Collection $reservations;
@@ -70,7 +70,7 @@ class Event
     private ?float $longitude = null;
 
     #[ORM\ManyToOne(inversedBy: 'event_id')]
-    private ?Rating $rating = null;
+    private ?Ratting $ratting = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
@@ -82,7 +82,7 @@ class Event
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
-        $this->ratings = new ArrayCollection();
+        $this->rattings = new ArrayCollection();
         $this->reservations = new ArrayCollection();
     }
 
@@ -263,74 +263,48 @@ class Event
     }
 
     /**
-     * @return Collection<int, Rating>
+     * @return Collection<int, Ratting>
      */
-    public function getRatings(): Collection
+    public function getRattings(): Collection
     {
-        return $this->ratings;
+        return $this->rattings;
     }
 
-    public function addRating(Rating $rating): static
+    public function addRatting(Ratting $ratting): static
     {
-        if (!$this->ratings->contains($rating)) {
-            $this->ratings->add($rating);
-            $rating->setEvent($this);
+        if (!$this->rattings->contains($ratting)) {
+            $this->rattings->add($ratting);
+            $ratting->setEvent($this);
         }
 
         return $this;
     }
 
-    public function removeRating(Rating $rating): static
+    public function removeRatting(Ratting $ratting): static
     {
-        if ($this->ratings->removeElement($rating)) {
+        if ($this->rattings->removeElement($ratting)) {
             // set the owning side to null (unless already changed)
-            if ($rating->getEvent() === $this) {
-                $rating->setEvent(null);
+            if ($ratting->getEvent() === $this) {
+                $ratting->setEvent(null);
             }
         }
 
         return $this;
     }
 
-    public function getTotalRatings(): int
+    public function getTotalRattings(): int
     {
-        return $this->ratings->count();
-    }
-     /**
-    * @return Collection<int, Apprenant>
-     */
-    public function getApprenants(): Collection
-    {
-        return $this->apprenants;
+        return $this->rattings->count();
     }
 
-    public function addApprenant(Apprenant $apprenant): static
+    public function getRatting(): ?Ratting
     {
-        if (!$this->apprenants->contains($apprenant)) {
-            $this->apprenants->add($apprenant);
-            $apprenant->addEvenement($this);
-        }
-
-        return $this;
+        return $this->ratting;
     }
 
-    public function removeApprenant(Apprenant $apprenant): static
+    public function setRatting(?Ratting $ratting): static
     {
-        if ($this->apprenants->removeElement($apprenant)) {
-            $apprenant->removeEvenement($this);
-        }
-
-        return $this;
-    }
-
-    public function getRating(): ?Rating
-    {
-        return $this->rating;
-    }
-
-    public function setRating(?Rating $rating): static
-    {
-        $this->rating = $rating;
+        $this->ratting = $ratting;
 
         return $this;
     }
