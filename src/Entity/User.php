@@ -47,26 +47,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $resetToken = null;
 
-    /**
-     * @var Collection<int, Planning>
-     */
-    #[ORM\OneToMany(targetEntity: Planning::class, mappedBy: 'user')]
-    private Collection $plannings;
-
-    /**
-     * @var Collection<int, Event>
-     */
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'user')]
-    private Collection $event;
+    private Collection $events;
 
     #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $favorites;
 
+    #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'favoritedBy')]
+    private $favoriteEvents;
+
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $reservations;
+
     public function __construct()
     {
-        $this->plannings = new ArrayCollection();
         $this->roles = ['ROLE_USER'];
         $this->favorites = new ArrayCollection();
+        $this->favoriteEvents = new ArrayCollection();
+        $this->events = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -240,28 +239,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Planning>
+     * @return Collection<int, Event>
      */
-    public function getPlannings(): Collection
+    public function getEvents(): Collection
     {
-        return $this->plannings;
+        return $this->events;
     }
 
-    public function addPlanning(Planning $planning): static
+    public function addEvent(Event $event): static
     {
-        if (!$this->plannings->contains($planning)) {
-            $this->plannings->add($planning);
-            $planning->setUser($this);
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+            $event->setUser($this);
         }
 
         return $this;
     }
 
-    public function removePlanning(Planning $planning): static
+    public function removeEvent(Event $event): static
     {
-        if ($this->plannings->removeElement($planning)) {
-            if ($planning->getUser() === $this) {
-                $planning->setUser(null);
+        if ($this->events->removeElement($event)) {
+            // set the owning side to null (unless already changed)
+            if ($event->getUser() === $this) {
+                $event->setUser(null);
             }
         }
 
@@ -292,6 +292,63 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($favorite->getUser() === $this) {
                 $favorite->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Event[]
+     */
+    public function getFavoriteEvents(): Collection
+    {
+        return $this->favoriteEvents;
+    }
+
+    public function addFavoriteEvent(Event $event): self
+    {
+        if (!$this->favoriteEvents->contains($event)) {
+            $this->favoriteEvents[] = $event;
+            $event->addFavoritedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavoriteEvent(Event $event): self
+    {
+        if ($this->favoriteEvents->removeElement($event)) {
+            $event->removeFavoritedBy($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): self
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations[] = $reservation;
+            $reservation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): self
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getUser() === $this) {
+                $reservation->setUser(null);
             }
         }
 

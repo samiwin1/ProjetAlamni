@@ -6,7 +6,7 @@
     <div class="event-edit-container">
         <h1 class="event-edit-title">Ajouter une catégorie</h1>
 
-        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'novalidate':'novalidate'}}) }}
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
             <table class="event-edit-table">
                 {% for field in form %}
                     {% if field.vars.name != '_token' %}
@@ -27,81 +27,79 @@
             </div>
         {{ form_end(form) }}
     </div>
-{% endblock %}
 
-{% block stylesheets %}
-<style>
-    .event-edit-container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+    <style>
+        .event-edit-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
 
-    .event-edit-title {
-        text-align: center;
-        color: #333;
-        margin-bottom: 20px;
-    }
+        .event-edit-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-    .event-edit-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        .event-edit-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    .event-edit-table td {
-        padding: 10px;
-    }
+        .event-edit-table td {
+            padding: 10px;
+        }
 
-    .event-edit-label {
-        font-weight: bold;
-        width: 30%;
-        text-align: right;
-    }
+        .event-edit-label {
+            font-weight: bold;
+            width: 30%;
+            text-align: right;
+        }
 
-    .event-edit-field {
-        width: 70%;
-    }
+        .event-edit-field {
+            width: 70%;
+        }
 
-    .form-control {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
 
-    .event-edit-buttons {
-        text-align: center;
-        margin-top: 20px;
-    }
+        .event-edit-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-    .btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
-        cursor: pointer;
-        transition: 0.3s;
-    }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-    .btn-primary {
-        background-color: #007bff;
-        color: #fff;
-    }
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
 
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
 
-    .btn-secondary {
-        background-color: #6c757d;
-        color: #fff;
-    }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+        }
 
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
-</style>
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
 {% endblock %}

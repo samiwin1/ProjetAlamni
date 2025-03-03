@@ -1,4 +1,92 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f8ff;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        text-align: center;
+    }
+
+    .form-title {
+        font-size: 28px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #007bff;
+        text-shadow: 0 0 5px #007bff, 0 0 10px #0047ab;
+        margin-bottom: 20px;
+        animation: glow 1.5s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 5px #007bff, 0 0 10px #0047ab; }
+        to { text-shadow: 0 0 10px #007bff, 0 0 20px #0047ab; }
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #0056b3;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: white;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        border-color: #0047ab;
+        box-shadow: 0 0 8px rgba(0, 71, 171, 0.6);
+        outline: none;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        background: linear-gradient(90deg, #007bff, #0047ab);
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(90deg, #0047ab, #002f6c);
+        box-shadow: 0 0 20px rgba(0, 123, 255, 0.8);
+    }
+</style>
+
+<div class="form-container">
+    <h2 class="form-title">Créer un Événement</h2>
+    
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+    {% for field in form %}
+        <div class="form-group">
+            {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(field, {'attr': {'class': 'form-input'}}) }}
+            <div class="form-error">{{ form_errors(field) }}</div>
+        </div>
+    {% endfor %}
+
+    <button class="btn btn-submit">Créer Event</button>
+
+    {{ form_end(form) }}
+</div>

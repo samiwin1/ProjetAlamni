@@ -52,11 +52,38 @@ class Event
     private ?Category $category = null;
 
     #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $apprenants;
+
+    #[ORM\OneToMany(targetEntity: Favorite::class, mappedBy: 'event', orphanRemoval: true)]
     private Collection $favorites;
+
+    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $ratings;
+
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'event', orphanRemoval: true)]
+    private Collection $reservations;
+
+    #[ORM\Column(type: 'float')]
+    private ?float $latitude = null;
+
+    #[ORM\Column(type: 'float')]
+    private ?float $longitude = null;
+
+    #[ORM\ManyToOne(inversedBy: 'event_id')]
+    private ?Rating $rating = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'events')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\Column(type: 'integer')]
+    private ?int $nbrPlace = null;
 
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -64,7 +91,6 @@ class Event
         return $this->id;
     }
 
-   
     public function getNom(): ?string
     {
         return $this->nom;
@@ -153,6 +179,59 @@ class Event
         return $this;
     }
 
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(float $latitude): static
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(float $longitude): static
+    {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    public function getNbrPlace(): ?int
+    {
+        return $this->nbrPlace;
+    }
+
+    public function setNbrPlace(int $nbrPlace): static
+    {
+        $this->nbrPlace = $nbrPlace;
+        return $this;
+    }
+
+    public function isFull(): bool
+    {
+        $totalReservations = array_reduce($this->reservations->toArray(), function ($carry, $reservation) {
+            return $carry + $reservation->getNumberOfTickets();
+        }, 0);
+
+        return $totalReservations >= $this->nbrPlace;
+    }
+
     /**
      * @return Collection<int, Favorite>
      */
@@ -177,6 +256,109 @@ class Event
             // set the owning side to null (unless already changed)
             if ($favorite->getEvent() === $this) {
                 $favorite->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rating>
+     */
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(Rating $rating): static
+    {
+        if (!$this->ratings->contains($rating)) {
+            $this->ratings->add($rating);
+            $rating->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRating(Rating $rating): static
+    {
+        if ($this->ratings->removeElement($rating)) {
+            // set the owning side to null (unless already changed)
+            if ($rating->getEvent() === $this) {
+                $rating->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTotalRatings(): int
+    {
+        return $this->ratings->count();
+    }
+     /**
+    * @return Collection<int, Apprenant>
+     */
+    public function getApprenants(): Collection
+    {
+        return $this->apprenants;
+    }
+
+    public function addApprenant(Apprenant $apprenant): static
+    {
+        if (!$this->apprenants->contains($apprenant)) {
+            $this->apprenants->add($apprenant);
+            $apprenant->addEvenement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApprenant(Apprenant $apprenant): static
+    {
+        if ($this->apprenants->removeElement($apprenant)) {
+            $apprenant->removeEvenement($this);
+        }
+
+        return $this;
+    }
+
+    public function getRating(): ?Rating
+    {
+        return $this->rating;
+    }
+
+    public function setRating(?Rating $rating): static
+    {
+        $this->rating = $rating;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getEvent() === $this) {
+                $reservation->setEvent(null);
             }
         }
 

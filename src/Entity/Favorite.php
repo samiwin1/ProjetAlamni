@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: FavoriteRepository::class)]
 class Favorite
 {
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,10 +18,10 @@ class Favorite
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(targetEntity: Event::class, inversedBy: 'favorites')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Event $event = null;
-
+    #[ORM\ManyToOne(targetEntity: Event::class)]
+    #[ORM\JoinColumn(name: "event_id", referencedColumnName: "id", onDelete: "CASCADE")]
+private ?Event $event = null;
+ 
     public function getId(): ?int
     {
         return $this->id;

@@ -1,0 +1,20 @@
+<!-- ...existing code... -->
+
+<div class="reservation-section">
+    <h3>Reserve Tickets</h3>
+    <form action="/events/<%= event._id %>/reserve" method="POST">
+        <label for="numberOfTickets">Number of Tickets:</label>
+        <input type="number" id="numberOfTickets" name="numberOfTickets" value="1" min="1">
+        <button type="button" onclick="incrementTickets()">+</button>
+        <button type="submit">Reserve</button>
+    </form>
+</div>
+
+<script>
+    function incrementTickets() {
+        const ticketInput = document.getElementById('numberOfTickets');
+        ticketInput.value = parseInt(ticketInput.value) + 1;
+    }
+</script>
+
+<!-- ...existing code... -->

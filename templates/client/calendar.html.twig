@@ -1,0 +1,270 @@
+{% extends 'front.html.twig' %}
+
+{% block title %}Calendrier des événements{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <style>
+        .calendar-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        #calendar {
+            background: white;
+            padding: 20px;
+        }
+
+        /* En-tête du calendrier */
+        .fc-header-toolbar {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            padding: 20px !important;
+            margin: 0 !important;
+            border-radius: 10px;
+            margin-bottom: 20px !important;
+        }
+
+        .fc-toolbar-title {
+            font-size: 1.5em !important;
+            font-weight: 700 !important;
+            color: white !important;
+            text-transform: capitalize;
+        }
+
+        /* Boutons de navigation */
+        .fc-button {
+            background-color: rgba(255,255,255,0.2) !important;
+            border: none !important;
+            padding: 8px 16px !important;
+            font-size: 0.9em !important;
+            border-radius: 8px !important;
+            color: white !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .fc-button:hover {
+            background-color: rgba(255,255,255,0.3) !important;
+            transform: translateY(-1px);
+        }
+
+        .fc-button-active {
+            background-color: rgba(255,255,255,0.4) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Cellules des jours */
+        .fc-daygrid-day {
+            padding: 4px !important;
+            height: 100px !important;
+            transition: all 0.3s ease;
+        }
+
+        .fc-daygrid-day:hover {
+            background-color: #f8fafc !important;
+        }
+
+        .fc-daygrid-day-number {
+            font-size: 1em !important;
+            padding: 4px 8px !important;
+            color: #1a1a1a !important;
+            font-weight: 500;
+        }
+
+        .fc-day-today {
+            background-color: #eef2ff !important;
+        }
+
+        /* En-têtes des jours de la semaine */
+        .fc-col-header-cell {
+            padding: 10px !important;
+            background-color: #f1f5f9 !important;
+            border: none !important;
+        }
+
+        .fc-col-header-cell-cushion {
+            font-size: 1em !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+            text-transform: uppercase;
+            padding: 4px 0;
+        }
+
+        /* Style des événements */
+        .fc-event {
+            padding: 4px 8px !important;
+            font-size: 0.85em !important;
+            border-radius: 6px !important;
+            background-color: #f43f5e !important;
+            border: none !important;
+            color: white !important;
+            margin: 2px 0 !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .fc-event:hover {
+            background-color: #e11d48 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Style pour les dates avec événements */
+        .has-events {
+            background-color: #fff1f2 !important;
+            border-radius: 8px;
+        }
+        
+        .has-events .fc-daygrid-day-number {
+            color: #e11d48 !important;
+            font-weight: bold !important;
+        }
+
+        /* Style du modal */
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
+            border: none;
+        }
+
+        .modal-title {
+            color: white !important;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .event-detail-item {
+            background: #f8fafc;
+            padding: 20px !important;
+            border-radius: 12px;
+            margin-bottom: 15px !important;
+            border: 1px solid #e2e8f0 !important;
+            transition: all 0.3s ease;
+        }
+
+        .event-detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .event-title {
+            font-size: 1.3em !important;
+            font-weight: 600;
+            color: #1a1a1a !important;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-time {
+            color: #4b5563 !important;
+            font-size: 1em !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .no-events-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+        .no-events-emoji {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .btn-close {
+            background-color: rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .btn-close:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center my-5">Calendrier des événements</h1>
+    <div class="calendar-container">
+        <div id="calendar"></div>
+    </div>
+
+    <!-- Modal pour afficher les détails des événements -->
+    <div class="modal fade" id="event_id" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventDetailsModalLabel">Événements du jour</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="eventDetailsContent">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debug: Log events data
+            console.log("Events data:", {{ events|raw }});
+            console.log("Events count: {{ eventsCount }}");
+            
+            var calendarEl = document.getElementById('calendar');
+            if (!calendarEl) {
+                console.error("Calendar element not found!");
+                return;
+            }
+            
+            try {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    locale: 'fr',
+                    height: 'auto',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth'
+                    },
+                    buttonText: {
+                        today: "Aujourd'hui",
+                        month: 'Mois',
+                        prev: 'Précédent',
+                        next: 'Suivant'
+                    },
+                    events: {{ events|raw }},
+                    // Rest of your calendar configuration...
+                });
+                calendar.render();
+                console.log("Calendar rendered successfully");
+            } catch (error) {
+                console.error("Error initializing calendar:", error);
+            }
+        });
+    </script>
+{% endblock %}

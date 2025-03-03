@@ -35,6 +35,7 @@
                             <th>Location</th>
                             <th>Image</th>
                             <th>Favorites</th>
+                            <th>Number of Places</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -48,11 +49,14 @@
                                 <td>{{ event.heureDebut ? event.heureDebut|date('H:i') : '' }}</td>
                                 <td>{{ event.heureFin ? event.heureFin|date('H:i') : '' }}</td>
                                 <td>{{ event.lieu }}</td>
+                                
                                 <td class="event-image-cell">
                                 {% if event.image %}
                                     <div class="image-placeholder">
-                                        <img src="{{ asset(event.image) }}" alt="Image de l'événement" class="event-image-cell">
-                                    </div>
+                                        <img src="{{ asset(event.image) }}" alt="Image de {{ event.nom }}" 
+                                                 class="img-thumbnail" 
+                                                 style="max-width: 100px; height: auto;">
+                                    </div>   
                                 {% else %}
                                     <div class="no-image-placeholder">
                                         <i class="fas fa-image"></i>
@@ -69,6 +73,7 @@
                                     </a>
                                     <span>{{ event.favorites|length }}</span>
                                 </td>
+                                <td>{{ event.nbrPlace }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-primary btn-sm" title="View">

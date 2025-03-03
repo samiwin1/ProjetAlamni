@@ -16,6 +16,11 @@ final class CategoryController extends AbstractController{
     #[Route(name: 'app_category_index', methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): Response
     {
+        $currentUser = $this->getUser();
+        if (!$currentUser || !in_array('ROLE_ADMIN', $currentUser->getRoles())) {
+            $this->addFlash('error', 'Accès non autorisé');
+            return $this->redirectToRoute('admin_dashboard');
+        }
         return $this->render('category/index.html.twig', [
             'categories' => $categoryRepository->findAll(),
         ]);
@@ -44,8 +49,11 @@ final class CategoryController extends AbstractController{
     #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
     public function show(Category $category): Response
     {
+        $events = $category->getEvents(); // 🔹 Récupérer les événements liés à cette catégorie
+
         return $this->render('category/show.html.twig', [
             'category' => $category,
+            'events' => $events, // 🔹 Envoyer les événements au template
         ]);
     }
 

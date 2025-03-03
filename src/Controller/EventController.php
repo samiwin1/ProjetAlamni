@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\Favorite;
+use App\Entity\User;
 use App\Form\EventType;
 use App\Repository\EventRepository;
 use App\Repository\FavoriteRepository;
@@ -21,6 +22,11 @@ final class EventController extends AbstractController
     #[Route('/', name: 'app_event_index', methods: ['GET'])]
     public function index(Request $request, EventRepository $eventRepository): Response
     {
+        $currentUser = $this->getUser();
+        if (!$currentUser || !in_array('ROLE_ADMIN', $currentUser->getRoles())) {
+            $this->addFlash('error', 'Accès non autorisé');
+            return $this->redirectToRoute('admin_dashboard');
+        }
         $searchTerm = $request->query->get('search', '');
         $events = $eventRepository->findBySearchTerm($searchTerm);
 
