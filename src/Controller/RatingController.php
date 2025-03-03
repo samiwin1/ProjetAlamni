@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 
+use App\Repository\CoursRepository;
+use App\Repository\DevoirRepository;
 
 use App\Entity\Rating;
 use App\Entity\Cours;
@@ -62,5 +64,44 @@ public function edit(Request $request, Rating $rating, EntityManagerInterface $e
         'cours' => $rating->getCours()
     ]);
 }
+#[Route('/course/{id}', name: 'app_course_show')]
+public function show(
+    Cours $cour, 
+    DevoirRepository $devoirRepository, 
+    CoursRepository $coursRepository,
+    Request $request, 
+    EntityManagerInterface $entityManager
+): Response {
+    // Get the assignments related to the course
+    $devoirs = $devoirRepository->findBy(['cours' => $cour]);
+
+    // Get related courses
+    $relatedCourses = $coursRepository->findBy(
+        ['matiereC' => $cour->getMatiereC()],
+        null,
+        3
+    );
+
+    // Create new rating form only if user is logged in
+    $rating_form = null;
+    $user = $this->getUser();
+    if ($user) {
+        $rating = new Rating();
+        $rating->setCours($cour);
+        $rating->setUser($user);
+        
+        $rating_form = $this->createForm(RatingType::class, $rating, [
+            'action' => $this->generateUrl('app_rating_new', ['id' => $cour->getId()]),
+            'method' => 'POST',
+        ]);
+    }
+
+    return $this->render('client/showcourse.html.twig', [
+        'cour' => $cour,
+        'devoirs' => $devoirs,
+        'relatedCourses' => $relatedCourses,
+        'rating_form' => $rating_form ? $rating_form->createView() : null,
+    ]);
+}      
     
 }

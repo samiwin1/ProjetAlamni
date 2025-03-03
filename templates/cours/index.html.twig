@@ -105,9 +105,9 @@
                         {% for cour in cours %}
                             <tr>
                                 <td>{{ cour.id }}</td>
-                                <td>
+                                <td class="event-image-cell">
                                     {% if cour.image %}
-                                        <img src="{{ asset('uploads/images/' ~ cour.image) }}" alt="" class="course-image" title="{{ cour.titre }}">
+                                        <img src="{{ asset('uploads/images/' ~ cour.image) }}" alt="" class="img-thumbail" style="max-width: 100px; heigth: auto" title="{{ cour.titre }}">
                                     {% else %}
                                         <i class="fas fa-image text-muted" style="font-size: 0.8rem;"></i>
                                     {% endif %}
