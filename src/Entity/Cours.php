@@ -42,16 +42,33 @@ class Cours
     #[ORM\OneToMany(mappedBy: 'cours', targetEntity: Devoir::class, cascade: ['remove'])]
     private Collection $devoirs;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $supportC = null;
+
+    #[ORM\Column(length: 255)]
+  
+    private ?string $niveau = null;
+
+    /**
+     * @var Collection<int, Rating>
+     */
+    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'cours')]
+    private Collection $ratings;
+
+    /**
+     * @var Collection<int, Rating>
+     */
+    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'cours')]
+    private Collection $Ratings;
 
     public function __construct()
     {
         $this->devoirs = new ArrayCollection();
+      
         $this->dateC = new \DateTime();
+        $this->ratings = new ArrayCollection();
+        $this->Ratings = new ArrayCollection();
     }
-
-    // Getters and setters...
 
     public function getId(): ?int
     {
@@ -142,9 +159,54 @@ class Cours
         return $this->supportC;
     }
 
-    public function setSupportC(string $supportC): static
+    public function setSupportC(?string $supportC): self
     {
         $this->supportC = $supportC;
+        return $this;
+    }
+
+   
+
+
+
+    public function getniveau(): ?string
+    {
+        return $this->niveau;
+    }
+
+    public function setniveau(string $niveau): static
+    {
+        $this->niveau = $niveau;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Rating>
+     */
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(Rating $rating): static
+    {
+        if (!$this->ratings->contains($rating)) {
+            $this->ratings->add($rating);
+            $rating->setCours($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRating(Rating $rating): static
+    {
+        if ($this->ratings->removeElement($rating)) {
+            // set the owning side to null (unless already changed)
+            if ($rating->getCours() === $this) {
+                $rating->setCours(null);
+            }
+        }
 
         return $this;
     }

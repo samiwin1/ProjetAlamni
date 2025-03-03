@@ -106,7 +106,7 @@ class FrontController extends AbstractController
 
             $newPassword = $form->get('mot_de_passe')->getData();
             if (!empty($newPassword)) {
-                $user->setMotDePasse(password_hash($newPassword, PASSWORD_DEFAULT));
+                $user->setPassword(password_hash($newPassword, PASSWORD_DEFAULT));
             }
 
             $entityManager->flush();

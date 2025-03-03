@@ -16,6 +16,8 @@ use Knp\Snappy\Pdf;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/cours')]
 final class CoursController extends AbstractController
@@ -23,9 +25,19 @@ final class CoursController extends AbstractController
     #[Route(name: 'app_cours_index', methods: ['GET'])]
     public function index(CoursRepository $coursRepository): Response
     {
-        // On peut ajouter une recherche ici si nécessaire
         return $this->render('cours/index.html.twig', [
             'cours' => $coursRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/courses', name: 'app_courses')]
+    public function courses(CoursRepository $coursRepository): Response
+    {
+        $user = $this->getUser();
+        $courses = $coursRepository->findAll(); // Récupère tous les cours
+        return $this->render('client/courses.html.twig', [
+            'courses' => $courses,
+            'user' => $user,
         ]);
     }
 
@@ -52,9 +64,7 @@ final class CoursController extends AbstractController
                     ]);
                 }
             }
-
             $supportFile = $form->get('supportC')->getData();
-
             if ($supportFile) {
                 $originalFilename = pathinfo($supportFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
@@ -146,10 +156,8 @@ final class CoursController extends AbstractController
         return $this->redirectToRoute('app_cours_index', [], Response::HTTP_SEE_OTHER);
     }
 
-
-
     // Export PDF
-    #[Route('/planning/pdf', name: 'planning_pdf')]
+    #[Route('/planning/pdf', name: 'cours_pdf')]
     public function generatePdf(CoursRepository $CoursRepository): Response
     {
         // Fetch all planning data

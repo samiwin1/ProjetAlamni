@@ -1,131 +1,237 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base_front1.html.twig' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>{% block title %}Devoirs - Alamni{% endblock %}</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+{% block title %}Devoirs - {{ cour.titre }}{% endblock %}
 
-    <!-- Favicon -->
-    <link href="{{ asset('Front/img/favicon.ico') }}" rel="icon">
+{% block css %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #E65100;     /* Darker orange */
+            --primary-light: rgba(230, 81, 0, 0.1);
+            --primary-dark: #BF4400;      /* Even darker orange */
+            --gradient-start: #E65100;
+            --gradient-end: #F57C00;      /* Slightly lighter for gradient */
+        }
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
-    
-    {% block css %}
-    <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+        .devoir-header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            padding: 80px 0;
+            margin-bottom: 50px;
+        }
 
-    <!-- Libraries Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('lib/animate/animate.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/owlcarousel/assets/owl.carousel.min.css') }}">
+        .devoir-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+        .devoir-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        }
 
-    <!-- Template Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    {% endblock %}
-</head>
+        .devoir-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
 
-<body>
-    <div class="container-xxl bg-white p-0">
+        .devoir-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1.5rem auto;
+        }
 
-        <!-- Navbar Start -->
-        {% block navbar %}
-        <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
-            <a href="" class="navbar-brand">
-                <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
-            </a>
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav mx-auto">
-                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == '' %}active{% endif %}">Home</a>
-                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == '' %}active{% endif %}">About Us</a>
-                    <a href="{{ path('app_courses') }}" class="nav-item nav-link {% if app.request.get('_route') == 'app_courses' %}active{% endif %}">Courses</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle {% if app.request.get('_route') in ['', 'app_team', 'app_cta', 'app_appointment', 'app_404'] %}active{% endif %}" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
-                            <a href="" class="dropdown-item {% if app.request.get('_route') == '' %}active{% endif %}">School Facilities</a>
-                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_team' %}active{% endif %}">Popular Teachers</a>
-                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_cta' %}active{% endif %}">Become A Teacher</a>
-                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_appointment' %}active{% endif %}">Make Appointment</a>
-                            <a href="" class="dropdown-item {% if app.request.get('_route') == 'app_404' %}active{% endif %}">404 Error</a>
-                        </div>
-                    </div>
-                    <a href="" class="nav-item nav-link {% if app.request.get('_route') == 'app_contact' %}active{% endif %}">Contact Us</a>
-                </div>
-                <a href="#" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Join Us<i class="fa fa-arrow-right ms-3"></i></a>
+        .devoir-icon i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .devoir-content {
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .devoir-title {
+            color: #2C3E50;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+
+        .devoir-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .date-badge {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            width: fit-content;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-view {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 30px;
+            padding: 0.75rem 2rem;
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-view:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 81, 0, 0.3);  /* Adjusted shadow opacity */
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Update link colors */
+        a {
+            color: var(--primary-color);
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Update text selection color */
+        ::selection {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="devoir-header">
+        <div class="container">
+            <div class="text-center text-white">
+                <h1 class="display-4 animated slideInDown mb-4">Devoirs du cours</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center">
+                        <li class="breadcrumb-item"><a class="text-white" href="{{ path('app_courses') }}">Cours</a></li>
+                        <li class="breadcrumb-item text-white active">{{ cour.titre }}</li>
+                    </ol>
+                </nav>
             </div>
-        </nav>
-        {% endblock %}
-        <!-- Navbar End -->
+        </div>
+    </div>
 
-        <!-- Hero/Carousel Start -->
-        {% block hero %}
-        <div class="container-fluid p-0 mb-5">
-            <div class="owl-carousel header-carousel position-relative">
-                <div class="owl-carousel-item position-relative">
-                    <img class="img-fluid" src="{{ asset('img/carousel-1.jpg') }}" alt="">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(0, 0, 0, .2);">
-                        <div class="container">
-                            <div class="row justify-content-start">
-                                <div class="col-10 col-lg-8">
-                                    <h1 class="display-2 text-white animated slideInDown mb-4">The Best Kindergarten School For Your Child</h1>
-                                    <a href="#" class="btn btn-primary rounded-pill py-sm-3 px-sm-5 me-3 animated slideInLeft">Learn More</a>
-                                    <a href="#" class="btn btn-dark rounded-pill py-sm-3 px-sm-5 animated slideInRight">Our Classes</a>
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="section-header wow fadeInUp" data-wow-delay="0.1s">
+                <h2 class="mb-3">{{ cour.titre }}</h2>
+                <p class="text-muted">Découvrez tous les devoirs associés à ce cours</p>
+            </div>
+
+            {% if devoirs is empty %}
+                <div class="empty-state wow fadeInUp" data-wow-delay="0.2s">
+                    <i class="fas fa-tasks mb-3"></i>
+                    <h3>Aucun devoir disponible</h3>
+                    <p class="text-muted">Il n'y a pas encore de devoirs assignés pour ce cours.</p>
+                    <a href="{{ path('app_courses') }}" class="btn btn-view mt-3" style="width: auto;">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Retour aux cours</span>
+                    </a>
+                </div>
+            {% else %}
+                <div class="row g-4">
+                    {% for devoir in devoirs %}
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ loop.index0 * 0.1 }}s">
+                            <div class="devoir-card">
+                                <div class="devoir-icon">
+                                    <i class="fas fa-book-reader"></i>
+                                </div>
+                                <div class="devoir-content">
+                                    <h3 class="devoir-title">{{ devoir.titreD }}</h3>
+                                    <div class="badge-container">
+                                        <div class="date-badge">
+                                            <i class="far fa-calendar-alt"></i>
+                                            {{ devoir.dateD|date('d/m/Y H:i') }}
+                                        </div>
+                                    </div>
+                                    <p class="devoir-description">
+                                        {{ devoir.descrD|length > 100 ? devoir.descrD|slice(0, 100) ~ '...' : devoir.descrD }}
+                                    </p>
+                                    <a href="{{ path('app_devoir_show', {'id': devoir.id}) }}" 
+                                       class="btn btn-view">
+                                        <i class="fas fa-eye"></i>
+                                        <span>Voir détails</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endblock %}
-
-        <!-- Devoirs Section -->
-        {% block devoirs %}
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                    <h1 class="mb-3">Devoirs pour {{ cour.titre }}</h1>
-                    <p>Consultez la liste des devoirs pour ce cours.</p>
-                </div>
-                <div class="row g-4">
-                    {% if devoirs is empty %}
-                    <div class="col-12">
-                        <div class="alert alert-info text-center">
-                            <p>Aucun devoir disponible pour ce cours.</p>
-                        </div>
-                    </div>
-                    {% else %}
-                    {% for devoir in devoirs %}
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="card shadow-sm border-0">
-                            <img class="img-fluid" src="{{ asset('uploads/images/devoir-default.jpg') }}" alt="">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">{{ devoir.titreD }}</h5>
-                                <p class="card-text">{{ devoir.descrD }}</p>
-                                <p>Due Date: {{ devoir.dateD|date('Y-m-d H:i') }}</p>
-                                <a href="{{ path('app_devoir_show', {'id': devoir.id}) }}" class="btn btn-primary">Voir Plus</a>
-                            </div>
-                        </div>
-                    </div>
                     {% endfor %}
-                    {% endif %}
                 </div>
-            </div>
+            {% endif %}
         </div>
-        {% endblock %}
-
     </div>
-</body>
-
-</html>
+{% endblock %}

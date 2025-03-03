@@ -28,8 +28,8 @@
         }
 
         .course-image {
-            width: 30px; /* Ajustez la largeur selon vos besoins */
-            height: 30px; /* Ajustez la hauteur selon vos besoins */
+            width: 0px; /* Ajustez la largeur selon vos besoins */
+            height: 0px; /* Ajustez la hauteur selon vos besoins */
             object-fit: cover;
             border-radius: 2px;
         }
@@ -51,93 +51,104 @@
 
 {% block welc %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    
-    <div class="container-fluid mt-2">
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
-                <h4 class="fw-bold mb-0"><i class="fas fa-book"></i> Liste des Cours</h4>
-                <input type="text" style="margin:15px" id="searchInput" placeholder="Rechercher par matière..." class="form-control mb-3">
-        <a href="{{ path('planning_pdf') }}" class="btn btn-info">Download PDF</a>
-                <a href="{{ path('app_cours_new') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            Ajouter
-            </a>
-            </div>
-            <div class="card-body p-2">
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ label }} alert-dismissible fade show py-1 px-2" role="alert">
-                            <small>{{ message }}</small>
-                            <button type="button" class="btn-close p-1" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                {% endfor %}
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-                {% if cours is empty %}
-                    <div class="alert alert-warning text-center py-1 px-2"><small>Aucun cours trouvé.</small></div>
-                {% else %}
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle text-center table-sm">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Img</th>
-                                    <th>Titre</th>
-                                    <th>Description</th>
-                                    <th>Matière</th>
-                                    <th>Date</th>
-                                    <th>Support</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for cour in cours %}
-                                <tr>
-                                    <td>{{ cour.id }}</td>
-                                    <td>
-                                        {% if cour.image %}
-                                            <img src="{{ asset('uploads/images/' ~ cour.image) }}" alt="" class="course-image" title="{{ cour.titre }}">
-                                        {% else %}
-                                            <i class="fas fa-image text-muted"  style="font-size: 0.8rem;"></i>
-                                        {% endif %}
-                                    </td>
-                                    <td class="fw-semibold">{{ cour.titre|length > 15 ? cour.titre|slice(0, 15) ~ '...' : cour.titre }}</td>
-                                    <td>{{ cour.descrC|length > 20 ? cour.descrC|slice(0, 20) ~ '...' : cour.descrC }}</td>
-                                    <td class="matiere-column">{{ cour.matiereC|length > 10 ? cour.matiereC|slice(0, 10) ~ '...' : cour.matiereC  }}</td>
-                                    <td>{{ cour.dateC ? cour.dateC|date('d/m/y') : '-' }}</td>
-                                    <td>
-                                        {% if cour.supportC %}
-                                            <a href="{{ asset('uploads/supports/' ~ cour.supportC) }}" target="_blank" class="btn btn-sm btn-secondary">Télécharger</a>
-                                        {% else %}
-                                            <span class="text-muted">Aucun</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="actions-cell">
-                                        <div class="btn-group">
-                                            <a href="{{ path('app_devoir_by_cours', {'id': cour.id}) }}" class="btn btn-info btn-sm" title="Devoirs">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ path('app_cours_edit', {'id': cour.id}) }}" class="btn btn-warning btn-sm" title="Modifier">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form method="post" action="{{ path('app_cours_delete', {'id': cour.id}) }}" onsubmit="return confirm('Supprimer ?');">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cour.id) }}">
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
+<div class="container-fluid mt-2">
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Liste des Cours</h5>
+            <div class="d-flex gap-3">
+                <input type="text" 
+                       id="searchInput" 
+                       class="form-control" 
+                       placeholder="Rechercher par matière"
+                       style="width: 300px;">
+                <a href="{{ path('cours_pdf') }}" class="btn btn-danger">
+                    <i class="fas fa-file-pdf"></i>
+                    Exporter PDF
+                </a>
+                <a href="{{ path('app_cours_new') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Ajouter
+                </a>
             </div>
         </div>
+        <div class="card-body p-2">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show py-1 px-2" role="alert">
+                        <small>{{ message }}</small>
+                        <button type="button" class="btn-close p-1" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% if cours is empty %}
+                <div class="alert alert-warning text-center py-1 px-2"><small>Aucun cours trouvé.</small></div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle text-center table-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Img</th>
+                                <th>Titre</th>
+                                <th>Description</th>
+                                <th>Matière</th>
+                                <th>Date</th>
+                                <th>Niveau</th>
+                                <th>Support</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for cour in cours %}
+                            <tr>
+                                <td>{{ cour.id }}</td>
+                                <td>
+                                    {% if cour.image %}
+                                        <img src="{{ asset('uploads/images/' ~ cour.image) }}" alt="" class="course-image" title="{{ cour.titre }}">
+                                    {% else %}
+                                        <i class="fas fa-image text-muted" style="font-size: 0.8rem;"></i>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-semibold">{{ cour.titre|length > 15 ? cour.titre|slice(0, 15) ~ '...' : cour.titre }}</td>
+                                <td>{{ cour.descrC|length > 20 ? cour.descrC|slice(0, 20) ~ '...' : cour.descrC }}</td>
+                                <td class="matiere-column">{{ cour.matiereC|length > 10 ? cour.matiereC|slice(0, 10) ~ '...' : cour.matiereC }}</td>
+                                <td>{{ cour.dateC ? cour.dateC|date('d/m/y') : '-' }}</td>
+                                <td>{{ cour.niveau }}</td>
+                                <td>
+                                    {% if cour.supportC %}
+                                        <a href="{{ asset('uploads/supports/' ~ cour.supportC) }}" target="_blank" class="btn btn-sm btn-secondary">Télécharger</a>
+                                    {% else %}
+                                        <span class="text-muted">Aucun</span>
+                                    {% endif %}
+                                </td>
+                                <td class="actions-cell">
+                                    <div class="btn-group">
+                                        <a href="{{ path('app_devoir_by_cours', {'id': cour.id}) }}" class="btn btn-info btn-sm" title="Devoirs">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_cours_edit', {'id': cour.id}) }}" class="btn btn-warning btn-sm" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="post" action="{{ path('app_cours_delete', {'id': cour.id}) }}" onsubmit="return confirm('Supprimer ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cour.id) }}">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
     </div>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

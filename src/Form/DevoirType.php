@@ -26,7 +26,7 @@ class DevoirType extends AbstractType
                 'empty_data' => '',
                 'constraints' => [
                     new NotBlank([
-                        'message' => '',
+                        'message' => 'Le titre du devoir ne peut pas être vide.',
                     ]),
                     new Length([
                         'min' => 5,
@@ -40,7 +40,7 @@ class DevoirType extends AbstractType
                 'empty_data' => '',
                 'constraints' => [
                     new NotBlank([
-                        'message' => '',
+                        'message' => 'La description ne peut pas être vide.',
                     ]),
                 ],
             ])
@@ -69,7 +69,7 @@ class DevoirType extends AbstractType
                         'mimeTypes' => [
                             'application/pdf',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid PDF document',
+                        'mimeTypesMessage' => 'Veuillez télécharger un document PDF valide.',
                     ])
                 ],
             ]);

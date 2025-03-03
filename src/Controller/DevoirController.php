@@ -11,13 +11,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/devoir')]
-final class DevoirController extends AbstractController
+class DevoirController extends AbstractController
 {
-    #[Route(name: 'app_devoir_index', methods: ['GET'])]
+    #[Route('/', name: 'app_devoir_index', methods: ['GET'])]
     public function index(DevoirRepository $devoirRepository): Response
     {
         return $this->render('devoir/index.html.twig', [
@@ -67,9 +67,17 @@ final class DevoirController extends AbstractController
             return $this->redirectToRoute('app_devoir_by_cours', ['id' => $devoir->getCours()->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('devoir/new.html.twig', [
+        return $this->renderForm('devoir/new.html.twig', [
             'devoir' => $devoir,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_devoir_show', methods: ['GET'])]
+    public function show(Devoir $devoir): Response
+    {
+        return $this->render('client/show.html.twig', [
+            'devoir' => $devoir,
         ]);
     }
 
@@ -105,7 +113,7 @@ final class DevoirController extends AbstractController
             return $this->redirectToRoute('app_devoir_by_cours', ['id' => $devoir->getCours()->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('devoir/edit.html.twig', [
+        return $this->renderForm('devoir/edit.html.twig', [
             'devoir' => $devoir,
             'form' => $form,
         ]);

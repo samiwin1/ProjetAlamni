@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base_front1.html.twig' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>{% block title %}{{ devoir.titreD }} - Détails du Devoir{% endblock %}</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+{% block title %}{{ devoir.titreD }} - Détails du Devoir{% endblock %}
 
-    <!-- Favicon -->
-    <link href="{{ asset('Front/img/favicon.ico') }}" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
-    
-    <!-- Icon Font Stylesheet -->
+{% block css %}
+    {{ parent() }}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
 
@@ -27,110 +14,257 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 
+    <!-- Star Rating Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.2/themes/fontawesome-stars.css">
+
     <!-- Template Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-</head>
 
-<body>
-    <div class="container-xxl bg-white p-0">
-        {% block navbar %}
-        <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
-            <a href="" class="navbar-brand">
-                <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
-            </a>
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav mx-auto">
-                    <a href="{{ path('app_courses') }}" class="nav-item nav-link">Courses</a>
-                    <a href="{{ path('app_devoir_index') }}" class="nav-item nav-link active">Devoirs</a>
-                </div>
-            </div>
-        </nav>
-        {% endblock %}
+    <style>
+        :root {
+            --primary-color: #E65100;     /* Dark orange */
+            --primary-light: rgba(230, 81, 0, 0.1);
+            --primary-dark: #BF4400;      /* Darker orange */
+            --gradient-start: #E65100;
+            --gradient-end: #F57C00;      /* Slightly lighter orange */
+        }
 
-        {% block header %}
-        <div class="container-fluid bg-primary mb-5">
-            <div class="container py-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-10 text-center">
-                        <h1 class="display-3 text-white animated slideInDown">Devoir Details</h1>
-                    </div>
-                </div>
+        .devoir-header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            padding: 100px 0;
+            margin-bottom: 50px;
+        }
+
+        .detail-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 2rem;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .detail-item {
+            padding: 1.2rem;
+            border-radius: 10px;
+            background: var(--primary-light);
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateX(5px);
+            background: rgba(230, 81, 0, 0.15);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .support-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .support-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        .support-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(230, 81, 0, 0.1);
+        }
+
+        .btn-download {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50px;
+            padding: 15px 35px;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-download::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 81, 0, 0.3);
+            color: white;
+        }
+
+        .btn-download:hover::before {
+            opacity: 1;
+        }
+
+        .btn-download i,
+        .btn-download span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .date-badge {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Header Section -->
+    <div class="devoir-header">
+        <div class="container">
+            <div class="text-center text-white">
+                <h1 class="display-4 animated slideInDown mb-4">{{ devoir.titreD }}</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center">
+                        <li class="breadcrumb-item"><a class="text-white" href="{{ path('app_courses') }}">Cours</a></li>
+                        <li class="breadcrumb-item"><a class="text-white" href="{{ path('app_devoir_index') }}">Devoirs</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Détails</li>
+                    </ol>
+                </nav>
             </div>
         </div>
-        {% endblock %}
+    </div>
 
-        {% block devoir_details %}
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="row g-5">
-                    <!-- Devoir Details -->
-                    <div class="col-lg-12 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="h-100">
-                            <h6 class="section-title bg-white text-start text-primary pe-3">Devoir Details</h6>
-                            <h1 class="mb-4">{{ devoir.titreD }}</h1>
-                            <p class="mb-4">{{ devoir.descrD }}</p>
-                            <div class="row g-4 mb-4">
-                                <div class="col-sm-6">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-calendar text-primary me-3"></i>
-                                        <h6 class="mb-0">Date: {{ devoir.dateD ? devoir.dateD|date('d/m/Y H:i') : '' }}</h6>
+    <!-- Devoir Details Section -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="detail-card wow fadeInUp" data-wow-delay="0.1s">
+                    <!-- Title and Description -->
+                    <div class="mb-5">
+                        <h2 class="section-title">{{ devoir.titreD }}</h2>
+                        <p class="lead text-muted">{{ devoir.descrD }}</p>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-calendar-alt fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="text-muted mb-1">Date limite</h6>
+                                        <div class="date-badge">
+                                            <i class="fa fa-clock"></i>
+                                            {{ devoir.dateD ? devoir.dateD|date('d/m/Y H:i') : 'Non définie' }}
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-comment text-primary me-3"></i>
-                                        <h6 class="mb-0">Comment: {{ devoir.comment }}</h6>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-comment-dots fa-2x text-primary me-3"></i>
+                                    <div>
+                                        <h6 class="text-muted mb-1">Commentaire</h6>
+                                        <p class="mb-0">{{ devoir.comment ?: 'Aucun commentaire' }}</p>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Support de devoir -->
-                            <div class="mb-4">
-                                <h6 class="section-title bg-white text-start text-primary pe-3">Support de devoir</h6>
-                                {% if devoir.supportD %}
-                                    <a href="{{ asset('uploads/supports/' ~ devoir.supportD) }}" target="_blank" class="btn btn-secondary">Télécharger le support</a>
-                                {% else %}
-                                    <p class="text-muted">Aucun support disponible</p>
-                                {% endif %}
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="row g-3">
-                                <div class="col-sm-6">
-                                    <a href="{{ path('app_devoir_index') }}" class="btn btn-primary rounded-pill py-3 px-5 w-100">Back to Devoirs</a>
-                                </div> 
-                            </div>
-             
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        {% endblock %}
 
-        {% block footer %}
-        <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-            <div class="container py-5">
-                <div class="row g-5">
-                    <div class="col-lg-3 col-md-6">
-                        <h3 class="text-white mb-4">Get In Touch</h3>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <!-- Support de devoir -->
+                    <div class="support-card mb-5">
+                        <h4 class="section-title">Support de devoir</h4>
+                        {% if devoir.supportD %}
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-pdf fa-2x text-danger me-3"></i>
+                                    <div>
+                                        <h6 class="mb-1">Document du devoir</h6>
+                                        <small class="text-muted">Cliquez pour télécharger le support</small>
+                                    </div>
+                                </div>
+                                <a href="{{ asset('uploads/supports/' ~ devoir.supportD) }}" 
+                                   target="_blank"  
+                                class="btn btn-download">
+                                <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Aucun support n'est disponible pour ce devoir
+                            </div>
+                        {% endif %}
                     </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h3 class="text-white mb-4">Quick Links</h3>
-                        <a class="btn btn-link text-white-50" href="">About Us</a>
-                        <a class="btn btn-link text-white-50" href="">Contact Us</a>
+
+                    <!-- Navigation -->
+                    <div class="text-center">
+                        <a href="{{ path('app_devoir_index') }}" 
+                           class="btn btn-primary btn-lg rounded-pill px-5">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Retour aux devoirs
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        {% endblock %}
     </div>
-</body>
-
-</html>
+{% endblock %}

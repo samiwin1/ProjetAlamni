@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Cours;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -81,10 +82,21 @@ class CoursType extends AbstractType
                         'mimeTypes' => [
                             'application/pdf',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid PDF document',
+                        'mimeTypesMessage' => 'Veuillez télécharger un document PDF valide',
                     ])
                 ],
-            ]);
+            ])
+            ->add('niveau', ChoiceType::class, [
+                'required' => false,
+                'choices' => [
+                    'Collège' => 'college',
+                    'Lycée' => 'lycee'
+                ],
+                'placeholder' => 'Sélectionnez un niveau',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+                ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

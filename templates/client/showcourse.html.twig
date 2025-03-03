@@ -1,21 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base_front1.html.twig' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>{% block title %}{{ cour.titre }} - Détails du cours{% endblock %}</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+{% block title %}{{ cour.titre }} - Détails du cours{% endblock %}
 
-    <!-- Favicon -->
-    <link href="{{ asset('Front/img/favicon.ico') }}" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@600&family=Lobster+Two:wght@700&display=swap" rel="stylesheet">
-    
+{% block css %}
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
@@ -27,213 +14,388 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 
+    <!-- Star Rating Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-bar-rating/1.2.2/themes/fontawesome-stars.css">
+
     <!-- Template Stylesheet -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    {% block head_styles %}{% endblock %}
-</head>
 
-<body>
-    <div class="container-xxl bg-white p-0">
-        {% block navbar %}
-        <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
-            <a href="" class="navbar-brand">
-                <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>Alamni</h1>
-            </a>
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav mx-auto">
-                    <a href="" class="nav-item nav-link">Home</a>
-                    <a href="" class="nav-item nav-link">About Us</a>
-                    <a href="{{ path('app_courses') }}" class="nav-item nav-link active">Courses</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                        <div class="dropdown-menu rounded-0 rounded-bottom border-0 shadow-sm m-0">
-                            <a href="" class="dropdown-item">School Facilities</a>
-                            <a href="" class="dropdown-item">Popular Teachers</a>
-                            <a href="" class="dropdown-item">Become A Teacher</a>
-                            <a href="" class="dropdown-item">Make Appointment</a>
-                        </div>
-                    </div>
-                    <a href="" class="nav-item nav-link">Contact Us</a>
-                </div>
-                <a href="#" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Join Us<i class="fa fa-arrow-right ms-3"></i></a>
-            </div>
-        </nav>
-        {% endblock %}
+    <style>
+        .course-header {
+            background: linear-gradient(rgba(24, 29, 56, .7), rgba(24, 29, 56, .7)), url('{{ asset('uploads/images/' ~ cour.image) }}');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .course-card {
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            background: #ffffff;
+        }
 
-        {% block header %}
-        <div class="container-fluid bg-primary mb-5">
-            <div class="container py-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-10 text-center">
-                        <h1 class="display-3 text-white animated slideInDown">Our course</h1>
-                        <nav aria-label="breadcrumb">
-                            </ol>
-                        </nav>
-                    </div>
+        .course-image {
+            height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .course-image:hover {
+            transform: scale(1.05);
+        }
+
+        .detail-item {
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .btn-custom {
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            padding: 5px 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #06BBCC;
+        }
+
+        .support-download-card {
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #ffffff, #f3f3f3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .support-download-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .support-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #06BBCC;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: #058e9c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(6, 187, 204, 0.3);
+        }
+
+        .support-download-card:hover .support-icon {
+            transform: scale(1.1);
+            background: rgba(220, 53, 69, 0.2);
+        }
+
+        .rating-section {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .rating-stars {
+            font-size: 1.5rem;
+            color: #ffc107;
+        }
+
+        .rating-count {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .rating-form {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .rating-item {
+            transition: all 0.3s ease;
+        }
+
+        .rating-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- Course Header -->
+    <div class="course-header py-5 mb-5">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="display-3 text-white animated slideInDown">{{ cour.titre }}</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a class="text-white" href="{{ path('app_courses') }}">Courses</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">{{ cour.titre }}</li>
+                        </ol>
+                    </nav>
                 </div>
             </div>
         </div>
-        {% endblock %}
+    </div>
 
-        {% block course_details %}
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="row g-5">
-                    <!-- Course Image -->
-                    <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="position-relative h-100">
-                            <img class="img-fluid rounded w-100 h-100" src="{{ asset('uploads/images/' ~ cour.image) }}" alt="{{ cour.titre }}" style="object-fit: cover;">
-                        </div>
+    <!-- Course Details -->
+    <div class="container py-5">
+        <div class="row g-5">
+            {% if cour is defined %}
+                <!-- Course Image Column -->
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="course-card p-3">
+                        <img class="course-image w-100" src="{{ asset('uploads/images/' ~ cour.image) }}" alt="{{ cour.titre }}">
                     </div>
-                    <!-- Course Details -->
-                    <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="h-100">
-                            <h6 class="section-title bg-white text-start text-primary pe-3">Course Details</h6>
-                            <h1 class="mb-4">{{ cour.titre }}</h1>
-                            <p class="mb-4">{{ cour.descrC }}</p>
-                            <div class="row g-4 mb-4">
-                                <div class="col-sm-6">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-book-reader text-primary me-3"></i>
-                                        <h6 class="mb-0">Subject: {{ cour.matiereC }}</h6>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa fa-clock text-primary me-3"></i>
-                                        <h6 class="mb-0">Date: {{ cour.dateC|date('d/m/Y H:i') }}</h6>
-                                    </div>
+                </div>
+
+                <!-- Course Details Column -->
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="course-card p-4">
+                        <h2 class="section-title">{{ cour.titre }}</h2>
+                        <p class="lead mb-4">{{ cour.descrC }}</p>
+
+                        <!-- Course Information -->
+                        <div class="mb-4">
+                            <div class="detail-item d-flex align-items-center">
+                                <i class="fa fa-book-reader text-primary fa-2x me-3"></i>
+                                <div>
+                                    <h6 class="mb-0">Matière</h6>
+                                    <p class="mb-0">{{ cour.matiereC }}</p>
                                 </div>
                             </div>
 
-                            <!-- Support de cours -->
-                            <div class="mb-4">
-                                <h6 class="section-title bg-white text-start text-primary pe-3">Support de cours</h6>
-                                {% if cour.supportC %}
-                                    <a href="{{ asset('uploads/supports/' ~ cour.supportC) }}" target="_blank" class="btn btn-secondary">Télécharger le support</a>
-                                {% else %}
-                                    <p class="text-muted">Aucun support disponible</p>
-                                {% endif %}
+                            <div class="detail-item d-flex align-items-center">
+                                <i class="fa fa-clock text-primary fa-2x me-3"></i>
+                                <div>
+                                    <h6 class="mb-0">Date</h6>
+                                    <p class="mb-0">{{ cour.dateC|date('d/m/Y H:i') }}</p>
+                                </div>
                             </div>
 
-                            <!-- Action Buttons -->
-                            <div class="row g-3">
-                                <div class="col-sm-6">
-                                    <a href="{{ path('app_courses') }}" class="btn btn-primary rounded-pill py-3 px-5 w-100">Back to Courses</a>
-                                </div>
-                                <div class="col-sm-6">
-                                    <a href="{{ path('app_devoirs_by_course', {'id': cour.id }) }}" class="btn btn-primary">Devoirs</a>
+                            <div class="detail-item d-flex align-items-center">
+                                <i class="fa fa-graduation-cap text-primary fa-2x me-3"></i>
+                                <div>
+                                    <h6 class="mb-0">Niveau</h6>
+                                    <p class="mb-0">{{ cour.niveau }}</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endblock %}
 
-        {% block related_courses %}
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                    <h6 class="section-title bg-white text-center text-primary px-3">Related Courses</h6>
-                    <h1 class="mb-4">Similar Courses You May Like</h1>
-                </div>
-                <div class="row g-4">
-                    {% if relatedCourses is defined %}
-                        {% for relatedCourse in relatedCourses %}
-                            {% if relatedCourse.id != cour.id %} <!-- Exclude current course -->
-                                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                                    <div class="courses-item position-relative">
-                                        <div class="position-relative overflow-hidden rounded">
-                                            <img class="img-fluid" src="{{ asset('uploads/images/' ~ relatedCourse.image) }}" alt="{{ relatedCourse.titre }}">
-                                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                                <a href="" class="btn btn-primary rounded-pill py-2 px-4">Read More</a>
+                        <!-- Support de cours -->
+                        <div class="mb-4">
+                            <h4 class="section-title">Support de cours</h4>
+                            {% if cour.supportC %}
+                                <div class="support-download-card p-3 bg-light rounded-3 border border-2 border-primary border-opacity-25">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <div class="support-icon me-3">
+                                                <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Support du cours</h6>
+                                                <small class="text-muted">Cliquez pour télécharger</small>
                                             </div>
                                         </div>
-                                        <div class="bg-light text-center p-4">
-                                            <h5 class="mb-3">{{ relatedCourse.titre }}</h5>
-                                            <p>{{ relatedCourse.descrC|slice(0, 100) ~ (relatedCourse.descrC|length > 100 ? '...' : '') }}</p>
-                                            <div class="d-flex justify-content-between mb-4">
-                                                <div class="d-flex align-items-center">
-                                                    <i class="fa fa-book-reader text-primary me-2"></i>
-                                                    <small>{{ relatedCourse.matiereC }}</small>
-                                                </div>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="far fa-calendar-alt text-primary me-2"></i>
-                                                    <small>{{ relatedCourse.dateC|date('d/m/Y') }}</small>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <a href="{{ asset('uploads/supports/' ~ cour.supportC) }}" 
+                                           target="_blank" 
+                                           class="btn btn-download">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info d-flex align-items-center">
+                                    <i class="fas fa-info-circle fa-lg me-3"></i>
+                                    <div>
+                                        <h6 class="alert-heading mb-1">Aucun support disponible</h6>
+                                        <small>Le support pour ce cours n'a pas encore été ajouté.</small>
                                     </div>
                                 </div>
                             {% endif %}
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        {% endblock %}
+                        </div>
 
-        {% block footer %}
-        <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-            <div class="container py-5">
-                <div class="row g-5">
-                    <div class="col-lg-3 col-md-6">
-                        <h3 class="text-white mb-4">Get In Touch</h3>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
-                        <div class="d-flex pt-2">
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h3 class="text-white mb-4">Quick Links</h3>
-                        <a class="btn btn-link text-white-50" href="">About Us</a>
-                        <a class="btn btn-link text-white-50" href="">Contact Us</a>
-                        <a class="btn btn-link text-white-50" href="">Our Services</a>
-                        <a class="btn btn-link text-white-50" href="">Privacy Policy</a>
-                        <a class="btn btn-link text-white-50" href="">Terms & Condition</a>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h3 class="text-white mb-4">Photo Gallery</h3>
-                        <div class="row g-2 pt-2">
-                            <div class="col-4">
-                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-1.jpg') }}" alt="">
+                        <!-- Action Buttons -->
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <a href="{{ path('app_courses') }}" 
+                                   class="btn btn-custom btn-outline-primary w-100">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour aux cours
+                                </a>
                             </div>
-                            <div class="col-4">
-                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-2.jpg') }}" alt="">
+                            <div class="col-sm-6">
+                                <a href="{{ path('app_devoirs_by_course', {'id': cour.id }) }}" 
+                                   class="btn btn-custom btn-primary w-100">
+                                    <i class="fas fa-tasks me-2"></i>Devoirs
+                                </a>
                             </div>
-                            <div class="col-4">
-                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-3.jpg') }}" alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-4.jpg') }}" alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-5.jpg') }}" alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid rounded bg-light p-1" src="{{ asset('img/classes-6.jpg') }}" alt="">
+                            <div class="col-sm-12 mt-3">
+                                <a href="{{ path('app_course_qr_code', {'id': cour.id}) }}" 
+                                   class="btn btn-success btn-sm w-100" target="_blank">
+                                    <i class="fas fa-qrcode me-2"></i>Générer QR Code
+                                </a>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h3 class="text-white mb-4">Newsletter</h3>
-                        <p>Subscribe to our newsletter
+
+                        <!-- Rating Section -->
+                        <div class="rating-section mt-4">
+                            <h4 class="section-title">Évaluations</h4>
+                            
+                            <!-- Average Rating Display -->
+                            <div class="text-center mb-4">
+                                {% if cour.ratings|length > 0 %}
+                                    <div class="rating-stars">
+                                        {% set avgRating = cour.ratings|reduce((sum, rating) => sum + rating.value) / cour.ratings|length %}
+                                        {% for i in 1..5 %}
+                                            <i class="fas fa-star{% if i > avgRating %}-o{% endif %} text-warning"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="rating-count">
+                                        {{ cour.ratings|length }} évaluation(s)
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">Aucune évaluation pour le moment</p>
+                                {% endif %}
+                            </div>
+                        
+                            <!-- Rating Form -->
+                            {% if app.user %}
+                                {% set userRating = null %}
+                                {% for rating in cour.ratings %}
+                                    {% if rating.user == app.user %}
+                                        {% set userRating = rating %}
+                                    {% endif %}
+                                {% endfor %}
+                        
+                                {% if userRating is null %}
+                                    <div class="rating-form">
+                                        {{ form_start(rating_form) }}
+                                            <div class="mb-3">
+                                                {{ form_row(rating_form.value, {
+                                                    'label': 'Votre note',
+                                                    'attr': {
+                                                        'class': 'rating',
+                                                        'data-show-clear': 'false',
+                                                        'data-show-caption': 'false'
+                                                    }
+                                                }) }}
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ form_row(rating_form.comment, {
+                                                    'label': 'Votre commentaire (optionnel)',
+                                                    'attr': {'rows': 3}
+                                                }) }}
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-star me-2"></i>Évaluer
+                                            </button>
+                                        {{ form_end(rating_form) }}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Vous avez déjà évalué ce cours
+                                        <a href="{{ path('app_rating_edit', {'id': userRating.id}) }}" 
+                                           class="btn btn-sm btn-outline-primary ms-3">
+                                            Modifier mon évaluation
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <a href="{{ path('app_login') }}">Connectez-vous</a> pour évaluer ce cours
+                                </div>
+                            {% endif %}
+                        
+                            <!-- Individual Ratings -->
+                            {% if cour.ratings|length > 0 %}
+                                <div class="ratings-list mt-4">
+                                    <h5>Avis des utilisateurs</h5>
+                                    {% for rating in cour.ratings %}
+                                        <div class="rating-item card mb-3">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <div>
+                                                        <strong>{{ rating.user.nom }}</strong>
+                                                        <small class="text-muted ms-2">
+                                                            {{ rating.createdAt|date('d/m/Y') }}
+                                                        </small>
+                                                    </div>
+                                                    <div class="rating-stars">
+                                                        {% for i in 1..5 %}
+                                                            <i class="fas fa-star{% if i > rating.value %}-o{% endif %} text-warning"></i>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                {% if rating.comment %}
+                                                    <p class="mb-0">{{ rating.comment }}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Ce cours n'existe pas ou n'a pas été trouvé.
+                    </div>
+                </div>
+            {% endif %}
         </div>
-        {% endblock %}
     </div>
-</body>
-
-</html>
+{% endblock %}

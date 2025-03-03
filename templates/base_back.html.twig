@@ -372,21 +372,21 @@ mark {
         <div class="pcoded-content">
             {% block welc %}
             <div class="card-header">
-    <h5>Liste des Utilisateurs</h5>
-    <div class="d-flex gap-3">
-        <input type="text" 
+                <h5>Liste des Utilisateurs</h5>
+                <div class="d-flex gap-3">
+                    <input type="text" 
                id="searchInput" 
                class="form-control" 
                placeholder="Rechercher par nom, prénom ou email..."
                style="width: 300px;">
-        <a href="#" class="btn btn-danger">
-            <i class="fas fa-file-pdf"></i>
-            Exporter PDF
-        </a>
-        <a href="{{ path('user_add') }}" class="btn btn-primary">
+                <a href="#" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i>
+                Exporter PDF
+                </a>
+                <a href="{{ path('user_add') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i>
             Ajouter
-        </a>
+            </a>
     </div>
 </div>
                     <div class="card-body">

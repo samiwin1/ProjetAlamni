@@ -1,8 +1,8 @@
 parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
     support_directory: '%kernel.project_dir%/public/uploads/supports'
+
 services:
-    # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
@@ -20,3 +20,11 @@ services:
     App\Security\LoginFormAuthenticator:
         tags:
             - { name: 'security.authenticator' }
+
+    # QR Code Builder configuration
+    endroid.qr_code.builder:
+        class: Endroid\QrCode\Builder\Builder
+
+    # Alias for QR Code Builder
+    Endroid\QrCode\Builder\BuilderInterface: '@endroid.qr_code.builder'
+
